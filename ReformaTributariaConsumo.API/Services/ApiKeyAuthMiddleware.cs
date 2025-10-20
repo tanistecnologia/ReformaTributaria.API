@@ -6,6 +6,13 @@ public class ApiKeyAuthMiddleware(RequestDelegate next, IConfiguration configura
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Request.Path.Value != null && context.Request.Path.Value.Contains("healthz"))
+        {
+            //context.Response.ContentType = "application/json";
+            await next(context);
+            return;
+        }
+
         if (!context.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey))
         {
             context.Response.StatusCode = 401;

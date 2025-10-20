@@ -1,10 +1,21 @@
+using Hangfire;
+using Hangfire.Dashboard.BasicAuthorization;
+using Hangfire.PostgreSql;
+
+using HealthChecks.UI.Client;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+
+using Npgsql;
 
 using ReformaTributaria.API.Services;
 using ReformaTributaria.API.Utils;
+using ReformaTributaria.API.Utils.DB.HealthChecks;
 
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -15,26 +26,59 @@ using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddHangfire(config =>
+    config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseColouredConsoleLogProvider()
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(configure: configure =>
+        {
+            configure.UseNpgsqlConnection(ConnStr.Get(ConnectStr.dbHangfire));
+        }));
+
+builder.Services.AddHangfireServer();
+
+builder.Services
+    .AddHealthChecks()
+    .Add(new HealthCheckRegistration(
+        "SQL Server",
+        sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("SQLServer")),
+        failureStatus: HealthStatus.Unhealthy,
+        tags: null
+    ))
+    .Add(new HealthCheckRegistration(
+        "PostgreSQL",
+        sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("PostgreSQL")),
+        failureStatus: HealthStatus.Unhealthy,
+        tags: null
+    ));
+
 
 builder.Services.AddResponseCompression();
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSession();
 
 builder.Services.AddScoped<ReformaTributariaService>();
-builder.Services.AddScoped<IDbConnection>(_ => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
+builder.Services.AddKeyedScoped<IDbConnection>(
+    "SQLServer",
+    (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
+builder.Services.AddKeyedScoped<IDbConnection>(
+    "PostgreSQL",
+    (_, _) => ConnDB<NpgsqlConnection>.Get(ConnStr.Get(ConnectStr.dbHangfire))!);
+
 
 builder.Services
     .AddControllers()
     .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = new LowerCaseNamingPolicy(); });
 
-builder.Services.AddMvc(config =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    config.Filters.Add(new AuthorizeFilter(policy));
-});
+//builder.Services.AddMvc(config =>
+//{
+//    var policy = new AuthorizationPolicyBuilder()
+//        .RequireAuthenticatedUser()
+//        .Build();
+//    config.Filters.Add(new AuthorizeFilter(policy));
+//});
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(configurePolicy =>
@@ -118,5 +162,34 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var options = new DashboardOptions
+{
+    Authorization =
+    [
+        new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+        {
+            SslRedirect = false,
+            RequireSsl = false,
+            LoginCaseSensitive = true,
+            Users =
+            [
+                new BasicAuthAuthorizationUser
+                {
+                    Login = "hangfire",
+                    PasswordClear = "lmi1970--"
+                }
+            ]
+        })
+    ]
+};
+app.UseHangfireDashboard("/hangfire", options);
+
+app.UseHealthChecks(
+    path: "/healthz",
+    options: new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
 app.Run();

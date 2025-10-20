@@ -1,18 +1,21 @@
-﻿using System.Data;
-using Dapper;
+﻿using Dapper;
 using Dapper.Transaction;
+
 using ReformaTributaria.API.Model;
 using ReformaTributaria.API.Utils;
+
+using System.Data;
+
 using TClassificacaoTributaria;
 
 namespace ReformaTributaria.API.Services;
 
-public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, IDbConnection connection)
+public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, [FromKeyedServices("SQLServer")] IDbConnection connection)
 {
     public async Task<string> InsereDados(List<ClassificacaoTributariaModel> listClassificacaoTributaria)
     {
         var rowsAffected = 0;
-        
+
         using (var transaction = connection.BeginTransaction())
         {
             try
@@ -77,7 +80,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     {
                         parameters.Add("DT_INI_VIGENCIA", DBNull.Value, dbType: DbType.Date);
                     }
-                    
+
                     if (classificacaoTributaria.DataFimVigência != string.Empty)
                     {
                         var date = DateOnly.ParseExact(classificacaoTributaria.DataFimVigência, "yyyy-MM-dd");
@@ -86,8 +89,8 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     else
                     {
                         parameters.Add("DT_FIM_VIGENCIA", DBNull.Value, dbType: DbType.Date);
-                    }                    
-                    
+                    }
+
                     if (classificacaoTributaria.DataAtualização != string.Empty)
                     {
                         var date = DateOnly.ParseExact(classificacaoTributaria.DataAtualização, "yyyy-MM-dd");
@@ -97,7 +100,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     {
                         parameters.Add("DT_ATUALIZACAO", DBNull.Value, dbType: DbType.Date);
                     }
-                    
+
                     parameters.Add("ANEXO", classificacaoTributaria.Anexo, dbType: DbType.String);
                     parameters.Add("LINK_LEGISLACAO", classificacaoTributaria.LinkLegislação, dbType: DbType.String);
                     parameters.Add("APLICA_NFE_ABI", classificacaoTributaria.AplicaNFeAbi.SafeSubstring(0, 1), dbType: DbType.String);
@@ -168,13 +171,13 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                 from
                   RFC.TBL_CLASSIFICACAO_TRIBUTARIA");
 
-        return dados.ToList();
+        return [.. dados];
     }
-    
+
     public async Task<string> InsereDadosAnexos(List<AnexoModel> anexos)
     {
         var rowsAffected = 0;
-        
+
         using (var transaction = connection.BeginTransaction())
         {
             try
@@ -197,7 +200,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     {
                         parameters.Add("DT_INICIO_VIGENCIA", DBNull.Value, dbType: DbType.Date);
                     }
-                    
+
                     if (anexo.FimVigencia != string.Empty)
                     {
                         var date = DateOnly.ParseExact(anexo.FimVigencia, "yyyy-MM-dd");
@@ -206,7 +209,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     else
                     {
                         parameters.Add("DT_FIM_VIGENCIA", DBNull.Value, dbType: DbType.Date);
-                    }                    
+                    }
 
                     rowsAffected += await transaction.ExecuteAsync(
                         sql: @"
@@ -218,7 +221,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     );
 
                     var logTxt =
-                        $"Registro inserido: {anexo.Anexo} - {anexo.Tipo.ToString()} - {anexo.Codigo}/{rowsAffected}";
+                        $"Registro inserido: {anexo.Anexo} - {anexo.Tipo} - {anexo.Codigo}/{rowsAffected}";
                     logger.LogInformation(logTxt);
                 }
 
@@ -233,7 +236,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
             }
         }
     }
-    
+
     public async Task<List<AnexoListModel>> GetDadosAnexos()
     {
         var dados = await connection.QueryAsync<AnexoListModel>(
@@ -243,7 +246,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                 from
                   RFC.TBL_CLASSIFICACAO_TRIBUTARIA_ANEXOS");
 
-        return dados.ToList();
-    }    
-    
+        return [.. dados];
+    }
+
 }

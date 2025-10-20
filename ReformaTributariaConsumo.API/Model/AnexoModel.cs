@@ -12,7 +12,7 @@ public enum TipoCodigo
 public class AnexoModel
 {
     public int Anexo { get; set; }
-    
+
     public int Tipo { get; set; }
     public string Codigo { get; set; } = string.Empty;
     [JsonPropertyName("ini_vigencia")] public string IniVigencia { get; set; } = string.Empty;

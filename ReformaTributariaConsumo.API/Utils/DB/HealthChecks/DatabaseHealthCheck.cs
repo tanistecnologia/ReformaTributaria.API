@@ -1,6 +1,8 @@
-﻿using System.Data;
-using Dapper;
+﻿using Dapper;
+
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+using System.Data;
 
 namespace ReformaTributaria.API.Utils.DB.HealthChecks;
 

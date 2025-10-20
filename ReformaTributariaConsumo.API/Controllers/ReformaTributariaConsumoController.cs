@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using ReformaTributaria.API.Model;
 using ReformaTributaria.API.Services;
@@ -10,7 +11,8 @@ using TClassificacaoTributaria;
 namespace ReformaTributaria.API.Controllers;
 
 [ApiController]
-[ApiKeyAuth]
+//[ApiKeyAuth]
+[AllowAnonymous]
 [SwaggerTag("Utilizada para gerenciar a Classificacao Tributaria.")]
 [Produces("application/json")]
 [Route("api/hubtributario/v10/[controller]/ClassificacaoTributaria")]

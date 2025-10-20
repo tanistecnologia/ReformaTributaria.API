@@ -18,7 +18,7 @@ public class ApiKeyAuthAttribute : Attribute, IAuthorizationFilter
         var apiKey = configuration.GetValue<string>("ApiKey");
 
         if (apiKey == null || apiKey.Equals(extractedApiKey)) return;
-        
+
         context.Result = new UnauthorizedObjectResult("API Key inválida");
     }
 }
