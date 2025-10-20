@@ -1,0 +1,27 @@
+#
+## IMAGE NAME
+## tanis/hub-reformatributariaconsumo-api:0.01
+##
+## sudo docker-compose up -d --force-recreate --no-deps --build
+##
+
+services:
+  hub-reformatributariaconsumo-api:
+    image: tanis/hub-reformatributariaconsumo-api:0.01 ## trocar nome a imagem gerada
+    hostname: hub-reformatributariaconsumo-api ## trocar nome do host
+    container_name: hub-reformatributariaconsumo-api ## trocar nome app
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    restart: unless-stopped
+    networks:
+      tanis-network:
+
+networks:
+  tanis-network:
+    external: true
