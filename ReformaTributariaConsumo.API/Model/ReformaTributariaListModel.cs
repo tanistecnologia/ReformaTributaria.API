@@ -9,6 +9,7 @@ public class ReformaTributariaListModel
     public string RED_ALIQUOTA { get; set; } = string.Empty;
     public string TRANSF_CREDITO { get; set; } = string.Empty;
     public string DIFERIMENTO { get; set; } = string.Empty;
+    public string MONOFASICA { get; set; } = string.Empty;
     public string COD_CLASS_TRIB { get; set; } = string.Empty;
     public string DS_COD_CLASS_TRIB { get; set; } = string.Empty;
     public string NOME_CLASS_TRIB { get; set; } = string.Empty;
@@ -17,6 +18,7 @@ public class ReformaTributariaListModel
     public string TIPO_ALIQUOTA { get; set; } = string.Empty;
     public decimal PERC_RED_IBS { get; set; }
     public decimal PERC_RED_CBS { get; set; }
+    public string RED_BC { get; set; } = string.Empty;
     public string TRIB_REGULAR { get; set; } = string.Empty;
     public string CRED_PRESUMIDO { get; set; } = string.Empty;
     public string CRED_PARA { get; set; } = string.Empty;
