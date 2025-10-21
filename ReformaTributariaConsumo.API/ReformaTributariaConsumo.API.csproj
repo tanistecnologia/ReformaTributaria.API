@@ -25,4 +25,20 @@
       <Folder Include="Docker\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Utils\ReturnApi\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Utils\ReturnApi\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Utils\ReturnApi\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Utils\ReturnApi\**" />
+    </ItemGroup>
+
 </Project>

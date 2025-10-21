@@ -1,8 +1,8 @@
 ##
 ## IMAGE NAME
-## tanis/hub-admin-api:0.08
+## tanis/reformatributariaconsumo-api:0.08
 ##
-## sudo docker build --pull --rm -f Dockerfile -t tanis/hub-reformatributariaconsumo-api:0.01 . 
+## sudo docker build --pull --rm -f Dockerfile -t tanis/reformatributariaconsumo-api:0.01 . 
 ##
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
