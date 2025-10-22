@@ -50,4 +50,5 @@ public class ReformaTributariaListModel
     public string APLICA_NFAG { get; set; } = string.Empty;
     public string APLICA_NFGAS { get; set; } = string.Empty;
     public string APLICA_DERE { get; set; } = string.Empty;
+    public DateTime DT_ATUALIZACAO_TABELA { get; set; } = DateTime.Now;
 }

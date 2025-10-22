@@ -1,4 +1,6 @@
-﻿namespace ReformaTributaria.API.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+
+namespace ReformaTributaria.API.Services.Middlewares;
 
 public class ApiKeyAuthMiddleware(RequestDelegate next, IConfiguration configuration)
 {
@@ -13,6 +15,18 @@ public class ApiKeyAuthMiddleware(RequestDelegate next, IConfiguration configura
             return;
         }
 
+        var endpoint = context.GetEndpoint();
+        if (endpoint is not null)
+        {
+            var isAllowAnnonimous = endpoint.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
+
+            if (isAllowAnnonimous)
+            {
+                await next(context);
+                return;
+            }
+        }
+
         if (!context.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey))
         {
             context.Response.StatusCode = 401;
@@ -21,7 +35,6 @@ public class ApiKeyAuthMiddleware(RequestDelegate next, IConfiguration configura
         }
 
         var apiKey = configuration.GetValue<string>("ApiKey");
-
         if (apiKey != null && !apiKey.Equals(extractedApiKey))
         {
             context.Response.StatusCode = 401;

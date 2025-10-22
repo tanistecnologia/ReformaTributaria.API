@@ -1,4 +1,6 @@
-﻿namespace ReformaTributaria.API.Services;
+﻿using ReformaTributaria.API.Services.Middlewares;
+
+namespace ReformaTributaria.API.Services;
 
 public static class ApiKeyAuthMiddlewareExtensions
 {

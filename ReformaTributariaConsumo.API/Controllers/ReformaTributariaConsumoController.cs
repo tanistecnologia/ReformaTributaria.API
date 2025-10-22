@@ -11,8 +11,7 @@ using TClassificacaoTributaria;
 namespace ReformaTributaria.API.Controllers;
 
 [ApiController]
-//[ApiKeyAuth]
-[AllowAnonymous]
+[ApiKeyAuth]
 [SwaggerTag("Utilizada para gerenciar a Classificacao Tributaria.")]
 [Produces("application/json")]
 [Route("api/hubtributario/v10/[controller]/ClassificacaoTributaria")]

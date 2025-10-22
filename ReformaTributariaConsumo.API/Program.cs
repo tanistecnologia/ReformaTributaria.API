@@ -21,7 +21,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;
 using System.Reflection;
-
+using AspNetCore.Scalar;
 using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,7 +54,6 @@ builder.Services
         tags: null
     ));
 
-
 builder.Services.AddResponseCompression();
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSession();
@@ -67,18 +66,21 @@ builder.Services.AddKeyedScoped<IDbConnection>(
     "PostgreSQL",
     (_, _) => ConnDB<NpgsqlConnection>.Get(ConnStr.Get(ConnectStr.dbHangfire))!);
 
+// builder.Services.AddMvc(config =>
+// {
+//     var policy = new AuthorizationPolicyBuilder()
+//         .RequireAuthenticatedUser()
+//         .Build();
+//     config.Filters.Add(new AuthorizeFilter(policy));
+// });
+//
+// builder.Services.AddAuthorizationBuilder()
+//     .AddPolicy("user", policy => policy.RequireClaim("Store", "user"))
+//     .AddPolicy("admin", policy => policy.RequireClaim("Store", "admin"));
 
 builder.Services
     .AddControllers()
     .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = new LowerCaseNamingPolicy(); });
-
-//builder.Services.AddMvc(config =>
-//{
-//    var policy = new AuthorizationPolicyBuilder()
-//        .RequireAuthenticatedUser()
-//        .Build();
-//    config.Filters.Add(new AuthorizeFilter(policy));
-//});
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(configurePolicy =>
@@ -137,8 +139,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{ }
-
+{
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseSwagger(options => options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0);
 app.UseSwaggerUI(c =>
@@ -150,8 +153,11 @@ app.UseSwaggerUI(c =>
     c.DisplayRequestDuration();
 });
 
-
-app.UseApiKeyAuth();
+app.UseScalar(options =>
+{
+    options.UseTheme(Theme.Default);
+    options.RoutePrefix = "api-docs";
+});
 
 app.UseResponseCompression();
 app.UseHttpsRedirection();
@@ -160,6 +166,7 @@ app.UseRouting();
 app.UseCors();
 
 app.UseAuthorization();
+app.UseApiKeyAuth();
 
 app.MapControllers();
 
