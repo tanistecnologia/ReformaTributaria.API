@@ -22,6 +22,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Data;
 using System.Reflection;
 using AspNetCore.Scalar;
+using ReformaTributaria.API.Services.Middlewares;
 using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +57,7 @@ builder.Services
 
 builder.Services.AddResponseCompression();
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddSession();
+builder.Services.AddSession();
 
 builder.Services.AddScoped<ReformaTributariaService>();
 builder.Services.AddKeyedScoped<IDbConnection>(
@@ -77,6 +78,8 @@ builder.Services.AddKeyedScoped<IDbConnection>(
 // builder.Services.AddAuthorizationBuilder()
 //     .AddPolicy("user", policy => policy.RequireClaim("Store", "user"))
 //     .AddPolicy("admin", policy => policy.RequireClaim("Store", "admin"));
+
+builder.Services.AddMvc();
 
 builder.Services
     .AddControllers()
@@ -165,7 +168,7 @@ app.UseRouting();
 
 app.UseCors();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 app.UseApiKeyAuth();
 
 app.MapControllers();

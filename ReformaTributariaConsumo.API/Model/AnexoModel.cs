@@ -26,4 +26,5 @@ public class AnexoListModel
     public string Codigo { get; set; } = string.Empty;
     [JsonPropertyName("ini_vigencia")] public DateTime? IniVigencia { get; set; }
     [JsonPropertyName("fim_vigencia")] public DateTime? FimVigencia { get; set; }
+    public DateTime? DT_ATUALIZACAO_TABELA { get; set; }
 }

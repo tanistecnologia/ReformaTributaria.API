@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ReformaTributaria.API.Model;
 using ReformaTributaria.API.Services;
+using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils.DTO;
 using Swashbuckle.AspNetCore.Annotations;
 

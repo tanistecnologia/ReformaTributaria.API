@@ -120,6 +120,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     parameters.Add("APLICA_NFAG", classificacaoTributaria.AplicaNfAg.SafeSubstring(0, 1), dbType: DbType.String);
                     parameters.Add("APLICA_NFGAS", classificacaoTributaria.AplicaNfGas.SafeSubstring(0, 1), dbType: DbType.String);
                     parameters.Add("APLICA_DERE", classificacaoTributaria.AplicaDere.SafeSubstring(0, 1), dbType: DbType.String);
+                    parameters.Add("DT_ATUALIZACAO_TABELA", DateTime.Now, dbType: DbType.DateTime2);
 
                     rowsAffected += await transaction.ExecuteAsync(
                         sql: @"
@@ -129,14 +130,16 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
 								 RED_BC, TRIB_REGULAR, CRED_PRESUMIDO, CRED_PARA, IND_RED_BC, IND_MONO_PADRAO, IND_MONO_RETENCAO, IND_MONO_RETIDO, 
 								 IND_MONO_DIFERIMENTO, IND_ESTORNO_CREDITO, IND_CRED_PRESUMIDO_ZFM, IND_AJUSTE_COMPETENCIA, DT_INI_VIGENCIA, DT_FIM_VIGENCIA, 
 								 DT_ATUALIZACAO, ANEXO, LINK_LEGISLACAO, APLICA_NFE_ABI, APLICA_NFE, APLICA_NFCE, APLICA_CTE, APLICA_CTE_OS, APLICA_BPE, 
-								 APLICA_BPE_TA, APLICA_BPE_TM, APLICA_NF3E, APLICA_NFSE, APLICA_NFSE_VIA, APLICA_NFCOM, APLICA_NFAG, APLICA_NFGAS, APLICA_DERE)
+								 APLICA_BPE_TA, APLICA_BPE_TM, APLICA_NF3E, APLICA_NFSE, APLICA_NFSE_VIA, APLICA_NFCOM, APLICA_NFAG, APLICA_NFGAS, APLICA_DERE,
+								 DT_ATUALIZACAO_TABELA)
 							VALUES
 								(@COD_CST, @DS_SIT_TRIBUTARIA, @EXIGE_TRIB, @RED_BC_CST, @RED_ALIQUOTA, @TRANSF_CREDITO, @DIFERIMENTO, @MONOFASICA, @COD_CLASS_TRIB, 
 								 @DS_COD_CLASS_TRIB, @NOME_CLASS_TRIB, @REDACAO_LC_214_2025, @ARTIGO_LC_214_2025, @TIPO_ALIQUOTA, @PERC_RED_IBS, @PERC_RED_CBS, 
 								 @RED_BC, @TRIB_REGULAR, @CRED_PRESUMIDO, @CRED_PARA, @IND_RED_BC, @IND_MONO_PADRAO, @IND_MONO_RETENCAO, @IND_MONO_RETIDO, 
 								 @IND_MONO_DIFERIMENTO, @IND_ESTORNO_CREDITO, @IND_CRED_PRESUMIDO_ZFM, @IND_AJUSTE_COMPETENCIA, @DT_INI_VIGENCIA, @DT_FIM_VIGENCIA, 
 								 @DT_ATUALIZACAO, @ANEXO, @LINK_LEGISLACAO, @APLICA_NFE_ABI, @APLICA_NFE, @APLICA_NFCE, @APLICA_CTE, @APLICA_CTE_OS, @APLICA_BPE, 
-								 @APLICA_BPE_TA, @APLICA_BPE_TM, @APLICA_NF3E, @APLICA_NFSE, @APLICA_NFSE_VIA, @APLICA_NFCOM, @APLICA_NFAG, @APLICA_NFGAS, @APLICA_DERE)",
+								 @APLICA_BPE_TA, @APLICA_BPE_TM, @APLICA_NF3E, @APLICA_NFSE, @APLICA_NFSE_VIA, @APLICA_NFCOM, @APLICA_NFAG, @APLICA_NFGAS, @APLICA_DERE,
+								 @DT_ATUALIZACAO_TABELA)",
                         param: parameters
                     );
 
@@ -212,12 +215,14 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                         parameters.Add("DT_FIM_VIGENCIA", DBNull.Value, dbType: DbType.Date);
                     }
 
+                    parameters.Add("DT_ATUALIZACAO_TABELA", DateTime.Now, dbType: DbType.Date);
+                    
                     rowsAffected += await transaction.ExecuteAsync(
                         sql: @"
 							INSERT INTO RFC.TBL_CLASSIFICACAO_TRIBUTARIA_ANEXOS
-							  (ANEXO, TIPO_DOC, CODIGO, DT_INICIO_VIGENCIA, DT_FIM_VIGENCIA)
+							  (ANEXO, TIPO_DOC, CODIGO, DT_INICIO_VIGENCIA, DT_FIM_VIGENCIA, DT_ATUALIZACAO_TABELA)
 							VALUES
-							  (@ANEXO, @TIPO_DOC, @CODIGO, @DT_INICIO_VIGENCIA, @DT_FIM_VIGENCIA)",
+							  (@ANEXO, @TIPO_DOC, @CODIGO, @DT_INICIO_VIGENCIA, @DT_FIM_VIGENCIA, @DT_ATUALIZACAO_TABELA)",
                         param: parameters
                     );
 
@@ -243,7 +248,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
         var dados = await connection.QueryAsync<AnexoListModel>(
             sql: @"
                 select 
-                  ANEXO, TIPO_DOC TIPO, CODIGO, DT_INICIO_VIGENCIA INIVIGENCIA, DT_FIM_VIGENCIA FIMVIGENCIA 
+                  ANEXO, TIPO_DOC TIPO, CODIGO, DT_INICIO_VIGENCIA INIVIGENCIA, DT_FIM_VIGENCIA FIMVIGENCIA, DT_ATUALIZACAO_TABELA 
                 from
                   RFC.TBL_CLASSIFICACAO_TRIBUTARIA_ANEXOS");
 
