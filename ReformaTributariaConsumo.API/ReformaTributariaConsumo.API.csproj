@@ -5,8 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>ReformaTributaria.API</RootNamespace>
-        <AssemblyVersion>1.25.10.2</AssemblyVersion>
-        <FileVersion>1.25.10.2</FileVersion>
+        <AssemblyVersion>1.25.10.3</AssemblyVersion>
+        <FileVersion>1.25.10.3</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
