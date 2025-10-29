@@ -11,7 +11,7 @@ public class ReformaTributariaListModel
     public string DIFERIMENTO { get; set; } = string.Empty;
     public string MONOFASICA { get; set; } = string.Empty;
     public string COD_CLASS_TRIB { get; set; } = string.Empty;
-    public string DS_COD_CLASS_TRIB { get; set; } = string.Empty;
+    public string DS_CLASS_TRIB { get; set; } = string.Empty;
     public string NOME_CLASS_TRIB { get; set; } = string.Empty;
     public string REDACAO_LC_214_2025 { get; set; } = string.Empty;
     public string ARTIGO_LC_214_2025 { get; set; } = string.Empty;
