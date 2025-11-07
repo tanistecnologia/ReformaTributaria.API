@@ -97,6 +97,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.EnableAnnotations();
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = $"Reforma Tributária do Consumo API (V.{Assembly.GetEntryAssembly()?.GetName().Version?.ToString()})",
