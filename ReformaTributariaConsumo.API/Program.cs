@@ -1,12 +1,12 @@
+using AspNetCore.Scalar;
+
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.PostgreSql;
 
 using HealthChecks.UI.Client;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 
 using ReformaTributaria.API.Services;
+using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils;
 using ReformaTributaria.API.Utils.DB.HealthChecks;
 
@@ -21,8 +22,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;
 using System.Reflection;
-using AspNetCore.Scalar;
-using ReformaTributaria.API.Services.Middlewares;
+
 using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
