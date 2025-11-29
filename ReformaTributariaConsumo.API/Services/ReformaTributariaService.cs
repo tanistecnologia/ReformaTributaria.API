@@ -167,6 +167,159 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
         }
     }
 
+
+    public async Task<string> InsereDadosRTC(List<RtcClassificacaoTributariaModel> listClassificacaoTributaria)
+    {
+        var rowsAffected = 0;
+        var rowsCSTAffected = 0;
+
+        using (var transaction = connection.BeginTransaction())
+        {
+            try
+            {
+                var DataAtualizacaoTabela = DateTime.Now;
+                await transaction.ExecuteAsync("delete from RTC.TBL_RTC_CLASSIFICACAO_TRIBUTARIA");
+                await transaction.ExecuteAsync("delete from RTC.TBL_RTC_SITUACAO_TRIBUTARIA");
+
+                foreach (var ctrib in listClassificacaoTributaria)
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("RST_COD_CST", ctrib.Cst.CodigoSituacaoTributaria, dbType: DbType.String);
+                    var qtdeCST = await transaction.QuerySingleOrDefaultAsync<int>(
+                        sql: "select count(*) from RTC.TBL_RTC_SITUACAO_TRIBUTARIA C where C.RST_COD_CST = @RST_COD_CST",
+                        param: parameters
+                    );
+
+                    if (qtdeCST == 0)
+                    {
+                        parameters = new DynamicParameters();
+                        parameters.Add("RST_COD_CST", ctrib.Cst.CodigoSituacaoTributaria, dbType: DbType.String);
+                        parameters.Add("RST_DS_SITUACAO_TRIBUTARIA", ctrib.Cst.DescricaoSituacaoTributaria, dbType: DbType.String);
+                        parameters.Add("RST_IND_GIBSCBS", ctrib.Cst.IndGIbsCbs.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GIBSCBSMONO", ctrib.Cst.IndGIbsCbsMono.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GRED", ctrib.Cst.IndGRed.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GDIF", ctrib.Cst.IndGDif.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GTRANSFCRED", ctrib.Cst.IndGTransfCred.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GCREDPRESIBSZFM", ctrib.Cst.IndGCredPresIbsZfm.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_REDUTORBC", ctrib.Cst.IndRedutorBc.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_DT_ATUALIZACAO_TABELA", DataAtualizacaoTabela, dbType: DbType.Date);
+
+                        rowsCSTAffected += await transaction.ExecuteAsync(
+                            sql: @"
+                                insert into RTC.TBL_RTC_SITUACAO_TRIBUTARIA(
+                                    RST_COD_CST, RST_DS_SITUACAO_TRIBUTARIA, RST_IND_GIBSCBS, RST_IND_GIBSCBSMONO, RST_IND_GRED, RST_IND_GDIF,
+                                    RST_IND_GTRANSFCRED, RST_IND_GCREDPRESIBSZFM, RST_IND_REDUTORBC, RST_DT_ATUALIZACAO_TABELA)
+                                values (@RST_COD_CST, @RST_DS_SITUACAO_TRIBUTARIA, @RST_IND_GIBSCBS, @RST_IND_GIBSCBSMONO, @RST_IND_GRED, @RST_IND_GDIF,
+                                        @RST_IND_GTRANSFCRED, @RST_IND_GCREDPRESIBSZFM, @RST_IND_REDUTORBC, @RST_DT_ATUALIZACAO_TABELA)",
+                            param: parameters
+                        );
+                    }
+
+                    parameters = new DynamicParameters();
+                    parameters.Add("RCT_COD_CLASS_TRIB", ctrib.CodigoClassificacaoTributaria.Trim(), dbType: DbType.String);
+                    parameters.Add("RST_COD_CST", ctrib.Cst.CodigoSituacaoTributaria.Trim(), dbType: DbType.String);
+                    parameters.Add("RCT_DS_CLASS_TRIB", ctrib.DescricaoClassificacaoTributaria, dbType: DbType.String);
+                    parameters.Add("RCT_NOME_CLASS_TRIB", ctrib.NomeClassTrib, dbType: DbType.String);
+                    parameters.Add("RCT_LC_REDACAO", ctrib.LcRedacao, dbType: DbType.String);
+
+                    parameters.Add("RCT_PERC_RED_IBS", ctrib.PRedIbs, dbType: DbType.Decimal);
+                    parameters.Add("RCT_PERC_RED_CBS", ctrib.PRedCbs, dbType: DbType.Decimal);
+
+                    parameters.Add("RCT_IND_GTRIBREGULAR", ctrib.IndGTribRegular.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GCREDPRESOPER", ctrib.IndGCredPresOper.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GMONOPADRAO", ctrib.IndGMonoPadrao.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GMONORETEN", ctrib.IndGMonoReten.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GMONORET", ctrib.IndGMonoRet.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GMONODIF", ctrib.IndGMonoDif.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_GESTORNOCRED", ctrib.IndGEstornoCred.ToSN(), dbType: DbType.String);
+
+                    parameters.Add("RCT_IND_NFEABI", ctrib.IndNFeAbi.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFE", ctrib.IndNFe.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFCE", ctrib.IndNfCe.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_CTE", ctrib.IndCTe.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_CTEOS", ctrib.IndCTeOs.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_BPE", ctrib.IndBPe.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_BPETA", ctrib.IndBPeTa.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_BPETM", ctrib.IndBPeTm.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NF3E", ctrib.IndNf3E.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFSE", ctrib.IndNfSe.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFSEVIA", ctrib.IndNfSeVia.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFCOM", ctrib.IndNfCom.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFAG", ctrib.IndNfAg.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_NFGAS", ctrib.IndNfGas.ToSN(), dbType: DbType.String);
+                    parameters.Add("RCT_IND_DERE", ctrib.IndDere.ToSN(), dbType: DbType.String);
+
+                    //if (ctrib.DataInícioVigência != string.Empty)
+                    //{
+                    //    var date = DateOnly.ParseExact(ctrib.DataInícioVigência, "yyyy-MM-dd");
+                    //    parameters.Add("DT_INI_VIGENCIA", date, dbType: DbType.Date);
+                    //}
+                    //else
+                    //{
+                    //    parameters.Add("DT_INI_VIGENCIA", DBNull.Value, dbType: DbType.Date);
+                    //}
+
+                    //if (ctrib.DataFimVigência != string.Empty)
+                    //{
+                    //    var date = DateOnly.ParseExact(ctrib.DataFimVigência, "yyyy-MM-dd");
+                    //    parameters.Add("DT_FIM_VIGENCIA", date, dbType: DbType.Date);
+                    //}
+                    //else
+                    //{
+                    //    parameters.Add("DT_FIM_VIGENCIA", DBNull.Value, dbType: DbType.Date);
+                    //}
+
+                    //if (ctrib.DataAtualizacao != string.Empty)
+                    //{
+                    //    var date = DateOnly.ParseExact(ctrib.DataAtualizacao, "yyyy-MM-dd");
+                    //    parameters.Add("DT_ATUALIZACAO", date, dbType: DbType.Date);
+                    //}
+                    //else
+                    //{
+                    //    parameters.Add("DT_ATUALIZACAO", DBNull.Value, dbType: DbType.Date);
+                    //}
+
+                    parameters.Add("RCT_DT_INI_VIGENCIA", ctrib.DIniVig, dbType: DbType.Date);
+                    parameters.Add("RCT_DT_FIM_VIGENCIA", ctrib.DFimVig, dbType: DbType.Date);
+                    parameters.Add("RCT_DT_ATUALIZACAO", ctrib.DataAtualizacao, dbType: DbType.Date);
+
+                    rowsAffected += await transaction.ExecuteAsync(
+                        sql: @"
+							INSERT INTO RTC.TBL_CLASSIFICACAO_TRIBUTARIA
+								(RCT_COD_CLASS_TRIB, RST_COD_CST, RCT_DS_CLASS_TRIB, RCT_NOME_CLASS_TRIB, RCT_LC_REDACAO, RCT_LC_214_25,
+                                RCT_TIPO_ALIQUOTA, RCT_PERC_RED_IBS, RCT_PERC_RED_CBS, RCT_IND_GTRIBREGULAR, RCT_IND_GCREDPRESOPER,
+                                RCT_IND_GMONOPADRAO, RCT_IND_GMONORETEN, RCT_IND_GMONORET, RCT_IND_GMONODIF, RCT_IND_GESTORNOCRED, 
+                                RCT_IND_NFEABI, RCT_IND_NFE, RCT_IND_NFCE, RCT_IND_CTE, RCT_IND_CTEOS, RCT_IND_BPE, RCT_IND_BPETA, 
+                                RCT_IND_BPETM, RCT_IND_NF3E, RCT_IND_NFSE, RCT_IND_NFSEVIA, RCT_IND_NFCOM, RCT_IND_NFAG, RCT_IND_NFGAS,
+                                RCT_IND_DERE, RCT_DT_INI_VIGENCIA, RCT_DT_FIM_VIGENCIA, RCT_DT_ATUALIZACAO, RTA_ANEXO, RCT_LINK_LEGISLACAO)
+							VALUES
+								(@RCT_COD_CLASS_TRIB, @RST_COD_CST, @RCT_DS_CLASS_TRIB, @RCT_NOME_CLASS_TRIB, @RCT_LC_REDACAO, @RCT_LC_214_25,
+                                @RCT_TIPO_ALIQUOTA, @RCT_PERC_RED_IBS, @RCT_PERC_RED_CBS, @RCT_IND_GTRIBREGULAR, @RCT_IND_GCREDPRESOPER,
+                                @RCT_IND_GMONOPADRAO, @RCT_IND_GMONORETEN, @RCT_IND_GMONORET, @RCT_IND_GMONODIF, @RCT_IND_GESTORNOCRED, 
+                                @RCT_IND_NFEABI, @RCT_IND_NFE, @RCT_IND_NFCE, @RCT_IND_CTE, @RCT_IND_CTEOS, @RCT_IND_BPE, @RCT_IND_BPETA, 
+                                @RCT_IND_BPETM, @RCT_IND_NF3E, @RCT_IND_NFSE, @RCT_IND_NFSEVIA, @RCT_IND_NFCOM, @RCT_IND_NFAG, @RCT_IND_NFGAS,
+                                @RCT_IND_DERE, @RTA_ANEXO, @RCT_LINK_LEGISLACAO, @RCT_DT_INI_VIGENCIA, @RCT_DT_FIM_VIGENCIA, @RCT_DT_ATUALIZACAO)",
+                        param: parameters
+                    );
+
+                    var logTxt =
+                        $"Registros inseridos: {ctrib.CódigoDaClassificaçãoTributária.Trim()} CST: {rowsCSTAffected} CCLASTRIB: {rowsAffected}";
+                    logger.LogInformation(logTxt);
+                }
+
+                transaction.Commit();
+                return "ok";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                transaction.Rollback();
+                return "Erro: " + e.Message;
+            }
+        }
+    }
+
+
     public async Task<List<ReformaTributariaListModel>> GetDados()
     {
         var dados = await connection.QueryAsync<ReformaTributariaListModel>(
@@ -229,7 +382,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
                     }
 
                     parameters.Add("DT_ATUALIZACAO_TABELA", DataAtualizacaoTabela, dbType: DbType.Date);
-                    
+
                     rowsAffected += await transaction.ExecuteAsync(
                         sql: @"
 							INSERT INTO RTC.TBL_CLASSIFICACAO_TRIBUTARIA_ANEXOS

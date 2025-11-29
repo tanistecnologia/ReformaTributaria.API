@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using ReformaTributaria.API.Model;
 using ReformaTributaria.API.Services;
@@ -28,6 +27,15 @@ public class ReformaTributariaConsumoController(
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
         return Ok(await reformaTributariaService.InsereDados(data));
     }
+    
+    [HttpPost]
+    [SwaggerOperation("Atualiza tabela de Classificações Tributárias", "")]
+    [Route("RTC")]
+    public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaModel> data)
+    {
+        logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
+        return Ok(await reformaTributariaService.InsereDadosRTC(data));
+    }    
 
     [HttpGet]
     [SwaggerOperation("Lista tabela de Classificações Tributárias", "")]

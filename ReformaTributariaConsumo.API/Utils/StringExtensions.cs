@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Data;
+using System.Text.RegularExpressions;
 
 namespace ReformaTributaria.API.Utils;
 
@@ -37,6 +38,14 @@ public static partial class StringExtensions
         }
 
         return value + onde;
+    }
+
+    public static object? ToDateOnly(this string value)
+    {
+        if (value != string.Empty)
+            return DateOnly.ParseExact(value, "yyyy-MM-dd");
+
+        return DBNull.Value;
     }
 
     public static bool ValidaCNPJ(this string value)
