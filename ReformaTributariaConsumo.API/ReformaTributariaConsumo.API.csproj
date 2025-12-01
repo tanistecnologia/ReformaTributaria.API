@@ -42,4 +42,12 @@
       <None Remove="Utils\ReturnApi\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Model\RtcClassificacaoTributariaLista.Model.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Model\RtcClassificacaoTributariaLista.Model.cs" />
+    </ItemGroup>
+
 </Project>

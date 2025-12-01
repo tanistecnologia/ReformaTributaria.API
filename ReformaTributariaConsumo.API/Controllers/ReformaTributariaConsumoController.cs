@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-using ReformaTributaria.API.Model;
+using ReformaTributaria.API.Model.Anexo;
+using ReformaTributaria.API.Model.Post;
 using ReformaTributaria.API.Services;
 using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils.DTO;
-using Swashbuckle.AspNetCore.Annotations;
 
-using TClassificacaoTributaria;
+
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ReformaTributaria.API.Controllers;
 
@@ -20,31 +20,22 @@ public class ReformaTributariaConsumoController(
     ReformaTributariaService reformaTributariaService) : ControllerBase
 {
     [HttpPost]
-    [SwaggerOperation("Atualiza tabela de Classificações Tributárias", "")]
-    [Route("")]
-    public async Task<IActionResult> PostData([FromBody] List<ClassificacaoTributariaModel> data)
-    {
-        logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
-        return Ok(await reformaTributariaService.InsereDados(data));
-    }
-    
-    [HttpPost]
-    [SwaggerOperation("Atualiza tabela de Classificações Tributárias", "")]
+    [SwaggerOperation("Atualiza tabela de Classificações Tributárias", "RTC")]
     [Route("RTC")]
-    public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaModel> data)
+    public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaPostModel> data)
     {
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
         return Ok(await reformaTributariaService.InsereDadosRTC(data));
-    }    
+    }
 
     [HttpGet]
     [SwaggerOperation("Lista tabela de Classificações Tributárias", "")]
     [Route("")]
-    public async Task<ResponseDTO<List<ReformaTributariaListModel>>> GetData()
+    public async Task<ResponseDTO<List<RtcClassificacaoTributariaListaModel>>> GetData()
     {
-        return new ResponseDTO<List<ReformaTributariaListModel>>()
+        return new ResponseDTO<List<RtcClassificacaoTributariaListaModel>>
         {
-            Info = new BasicInfo<List<ReformaTributariaListModel>>()
+            Info = new BasicInfo<List<RtcClassificacaoTributariaListaModel>>
             {
                 Dados = await reformaTributariaService.GetDados()
             }
@@ -52,7 +43,7 @@ public class ReformaTributariaConsumoController(
     }
 
     [HttpPost]
-    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "xxxxxxxxxxx")]
+    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "RTC")]
     [Route("Anexos")]
     public async Task<OkObjectResult> PostDataAnexos([FromBody] List<AnexoModel> data)
     {
@@ -61,7 +52,7 @@ public class ReformaTributariaConsumoController(
     }
 
     [HttpGet]
-    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "xxxxxxxxxxx")]
+    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "RTC")]
     [Route("Anexos")]
     public async Task<ResponseDTO<List<AnexoListModel>>> GetDataAnexos()
     {
