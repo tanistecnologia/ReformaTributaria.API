@@ -8,11 +8,8 @@ using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi;
-
-//using Microsoft.OpenApi.Models;
 
 using Npgsql;
 
@@ -25,7 +22,6 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 using Tanis.Utils.Lib.DB.Connections;
 
@@ -127,7 +123,7 @@ builder.Services.AddSwaggerGen(c =>
     // Requisito de segurança global
     //var scheme = new OpenApiSecurityScheme
     //{
-        
+
     //    Reference = new OpenApiReference
     //    {
     //        Type = ReferenceType.SecurityScheme,
