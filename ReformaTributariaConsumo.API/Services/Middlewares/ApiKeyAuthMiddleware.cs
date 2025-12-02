@@ -9,7 +9,7 @@ public class ApiKeyAuthMiddleware(RequestDelegate next, IConfiguration configura
     public async Task InvokeAsync(HttpContext context)
     {
         context.Response.StatusCode = 200;
-        
+
         if (context.Request.Path.Value != null && context.Request.Path.Value.Contains("healthz"))
         {
             await next(context);

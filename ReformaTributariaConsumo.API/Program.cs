@@ -8,8 +8,11 @@ using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
+
+//using Microsoft.OpenApi.Models;
 
 using Npgsql;
 
@@ -17,10 +20,12 @@ using ReformaTributaria.API.Services;
 using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils.DB.HealthChecks;
 using ReformaTributaria.API.Utils.Json;
+
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;
 using System.Reflection;
+using System.Reflection.Metadata;
 
 using Tanis.Utils.Lib.DB.Connections;
 
@@ -120,22 +125,27 @@ builder.Services.AddSwaggerGen(c =>
     });
 
     // Requisito de segurança global
-    var scheme = new OpenApiSecurityScheme
-    {
-        Reference = new OpenApiReference
-        {
-            Type = ReferenceType.SecurityScheme,
-            Id = "ApiKey"
-        },
-        In = ParameterLocation.Header
-    };
+    //var scheme = new OpenApiSecurityScheme
+    //{
+        
+    //    Reference = new OpenApiReference
+    //    {
+    //        Type = ReferenceType.SecurityScheme,
+    //        Id = "ApiKey"
+    //    },
+    //    In = ParameterLocation.Header
+    //};
 
-    var requirement = new OpenApiSecurityRequirement
-    {
-        { scheme, new List<string>() }
-    };
+    //var requirement = new OpenApiSecurityRequirement
+    //{
+    //    { scheme, new List<string>() }
+    //};
 
-    c.AddSecurityRequirement(requirement);
+    c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("ApiKey", doc)] = []
+    });
+
 });
 
 var app = builder.Build();

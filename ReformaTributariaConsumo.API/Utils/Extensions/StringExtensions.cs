@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ReformaTributaria.API.Utils;
 

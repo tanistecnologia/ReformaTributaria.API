@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -47,7 +48,8 @@ public class DateOnlyNullableConverter : JsonConverter<DateOnly?>
         //writer.WriteStringValue(value.ToString(serializationFormat));
 
         if (value == null)
-        { writer.WriteStringValue("");
+        {
+            writer.WriteStringValue("");
             return;
         }
 

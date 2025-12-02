@@ -1,4 +1,5 @@
 ﻿using ReformaTributaria.API.Utils.Json.JsonConverter;
+
 using System.Text.Json.Serialization;
 
 namespace ReformaTributaria.API.Utils.Enums;

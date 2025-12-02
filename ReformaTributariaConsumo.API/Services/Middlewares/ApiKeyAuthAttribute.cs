@@ -24,7 +24,7 @@ public class ApiKeyAuthAttribute : Attribute, IAuthorizationFilter
                 return;
             }
         }
-        
+
         if (!context.HttpContext.Request.Headers.TryGetValue("x-api-key", out var extractedApiKey))
         {
             context.Result = new UnauthorizedObjectResult("API Key não encontrada");

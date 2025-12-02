@@ -101,6 +101,6 @@ public class BasicInfoResult<T>
     public BasicInfoResult()
     {
         RowsAffected = 0;
-        Erro = "";        
+        Erro = "";
     }
 }
