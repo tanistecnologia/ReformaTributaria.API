@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReformaTributaria.API.Model.Anexo;
+using ReformaTributaria.API.Model.Lista;
 using ReformaTributaria.API.Model.Post;
 using ReformaTributaria.API.Services;
 using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils.DTO;
-
 
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,12 +20,12 @@ public class ReformaTributariaConsumoController(
     ReformaTributariaService reformaTributariaService) : ControllerBase
 {
     [HttpPost]
-    [SwaggerOperation("Atualiza tabela de Classificações Tributárias", "RTC")]
-    [Route("RTC")]
+    [SwaggerOperation("Atualiza as tabelas de Classificações Tributárias", "")]
+    [Route("")]
     public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaPostModel> data)
     {
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
-        return Ok(await reformaTributariaService.InsereDadosRTC(data));
+        return Ok(await reformaTributariaService.InsereDadosRtc(data));
     }
 
     [HttpGet]
@@ -43,7 +43,7 @@ public class ReformaTributariaConsumoController(
     }
 
     [HttpPost]
-    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "RTC")]
+    [SwaggerOperation("Lista de Anexos das Classificações Tributárias", "O campo tipo deve ser 1-NCM ou 2-NBS")]
     [Route("Anexos")]
     public async Task<OkObjectResult> PostDataAnexos([FromBody] List<AnexoModel> data)
     {
@@ -52,7 +52,7 @@ public class ReformaTributariaConsumoController(
     }
 
     [HttpGet]
-    [SwaggerOperation("O campo tipo deve ser 1-NCM ou 2-NBS", "RTC")]
+    [SwaggerOperation("Lista de Anexos das Classificações Tributárias", "")]
     [Route("Anexos")]
     public async Task<ResponseDTO<List<AnexoListModel>>> GetDataAnexos()
     {

@@ -15,9 +15,8 @@ using Npgsql;
 
 using ReformaTributaria.API.Services;
 using ReformaTributaria.API.Services.Middlewares;
-using ReformaTributaria.API.Utils;
 using ReformaTributaria.API.Utils.DB.HealthChecks;
-
+using ReformaTributaria.API.Utils.Json;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;

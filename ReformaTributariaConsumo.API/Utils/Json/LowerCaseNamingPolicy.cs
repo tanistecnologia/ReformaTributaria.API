@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ReformaTributaria.API.Utils;
+namespace ReformaTributaria.API.Utils.Json;
 
 public class LowerCaseNamingPolicy : JsonNamingPolicy
 {

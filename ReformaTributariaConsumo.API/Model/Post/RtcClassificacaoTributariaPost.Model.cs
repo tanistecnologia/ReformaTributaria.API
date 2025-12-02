@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using ReformaTributaria.API.Utils.Enums;
+using ReformaTributaria.API.Utils.Json.JsonConverter;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -41,10 +42,10 @@ public partial class RtcClassificacaoTributariaPostModel
     public ETipoAliquota TipoAliquota { get; set; }
 
     [JsonPropertyName("pRedIBS")]
-    public Decimal PRedIbs { get; set; }
+    public decimal PRedIbs { get; set; }
 
     [JsonPropertyName("pRedCBS")]
-    public Decimal PRedCbs { get; set; }
+    public decimal PRedCbs { get; set; }
 
     [JsonPropertyName("ind_gTribRegular")]
     public ESimNao IndGTribRegular { get; set; }
@@ -161,35 +162,10 @@ public partial class RtcCstModel
     public ESimNao IndRedutorBc { get; set; }
 }
 
-[JsonConverter(typeof(JsonStringEnumConverter<ESimNao>))]
-public enum ESimNao { Não, Sim }
-
-public static class ESimNaoExtensions
-{
-    /// <summary>
-    /// Retorna "S" para ESimNao.Sim e "N" para ESimNao.Não.
-    /// Se o valor for null retorna "N".
-    /// </summary>
-    public static string ToSN(this ESimNao? value) =>
-        (value ?? ESimNao.Não) switch
-        {
-            ESimNao.Sim => "S",
-            _ => "N"
-        };
-
-    /// <summary>
-    /// Versão para ESimNao não-nulo: retorna "S" para Sim e "N" para Não.
-    /// </summary>
-    public static string ToSN(this ESimNao value) =>
-        value == ESimNao.Sim ? "S" : "N";
-}
-
-[JsonConverter(typeof(JsonStringEnumConverter<ETipoAliquota>))]
-public enum ETipoAliquota { Fixa, Padrão, SemAlíquota, UniformeNacionalReferência, UniformeSetorial };
 
 public partial class RtcClassificacaoTributariaPostModelX
 {
-    public static List<RtcClassificacaoTributariaPostModel> FromJson(string json) => 
+    public static List<RtcClassificacaoTributariaPostModel> FromJson(string json) =>
         JsonSerializer.Deserialize<List<RtcClassificacaoTributariaPostModel>>(json, Converter.Settings);
 }
 
@@ -213,198 +189,13 @@ internal static class Converter
     };
 }
 
-internal class ESimNaoConverter : JsonConverter<ESimNao>
-{
-    public override bool CanConvert(Type t) => t == typeof(ESimNao);
-
-    public override ESimNao Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var value = reader.GetString();
-        switch (value)
-        {
-            case "Não":
-                return ESimNao.Não;
-            case "Sim":
-                return ESimNao.Sim;
-        }
-        throw new Exception("Cannot unmarshal type Ind");
-    }
-
-    public override void Write(Utf8JsonWriter writer, ESimNao value, JsonSerializerOptions options)
-    {
-        switch (value)
-        {
-            case ESimNao.Não:
-                JsonSerializer.Serialize(writer, "Não", options);
-                return;
-            case ESimNao.Sim:
-                JsonSerializer.Serialize(writer, "Sim", options);
-                return;
-        }
-        throw new Exception("Cannot marshal type Ind");
-    }
-
-    public static readonly ESimNaoConverter Singleton = new ESimNaoConverter();
-}
-
-internal class ETipoAliquotaConverter : JsonConverter<ETipoAliquota>
-{
-    public override bool CanConvert(Type t) => t == typeof(ETipoAliquota);
-
-    public override ETipoAliquota Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var value = reader.GetString();
-        switch (value)
-        {
-            case "Fixa":
-                return ETipoAliquota.Fixa;
-            case "Padrão":
-                return ETipoAliquota.Padrão;
-            case "Sem alíquota":
-                return ETipoAliquota.SemAlíquota;
-            case "Uniforme nacional (referência)":
-                return ETipoAliquota.UniformeNacionalReferência;
-            case "Uniforme setorial":
-                return ETipoAliquota.UniformeSetorial;
-        }
-        throw new Exception("Cannot unmarshal type TipoAliquota");
-    }
-
-    public override void Write(Utf8JsonWriter writer, ETipoAliquota value, JsonSerializerOptions options)
-    {
-        switch (value)
-        {
-            case ETipoAliquota.Fixa:
-                JsonSerializer.Serialize(writer, "Fixa", options);
-                return;
-            case ETipoAliquota.Padrão:
-                JsonSerializer.Serialize(writer, "Padrão", options);
-                return;
-            case ETipoAliquota.SemAlíquota:
-                JsonSerializer.Serialize(writer, "Sem alíquota", options);
-                return;
-            case ETipoAliquota.UniformeNacionalReferência:
-                JsonSerializer.Serialize(writer, "Uniforme nacional (referência)", options);
-                return;
-            case ETipoAliquota.UniformeSetorial:
-                JsonSerializer.Serialize(writer, "Uniforme setorial", options);
-                return;
-        }
-        throw new Exception("Cannot marshal type TipoAliquota");
-    }
-
-    public static readonly ETipoAliquotaConverter Singleton = new ETipoAliquotaConverter();
-}
-
-public class DateOnlyConverter : JsonConverter<DateOnly>
-{
-    private readonly string serializationFormat;
-    public DateOnlyConverter() : this(null) { }
-
-    public DateOnlyConverter(string? serializationFormat)
-    {
-        this.serializationFormat = serializationFormat ?? "yyyy-MM-dd";
-    }
-
-    public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var value = reader.GetString();
-        return DateOnly.Parse(value!);
-    }
-
-    public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
-            => writer.WriteStringValue(value.ToString(serializationFormat));
-}
-
-public class TimeOnlyConverter : JsonConverter<TimeOnly>
-{
-    private readonly string serializationFormat;
-
-    public TimeOnlyConverter() : this(null) { }
-
-    public TimeOnlyConverter(string? serializationFormat)
-    {
-        this.serializationFormat = serializationFormat ?? "HH:mm:ss.fff";
-    }
-
-    public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var value = reader.GetString();
-        return TimeOnly.Parse(value!);
-    }
-
-    public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
-            => writer.WriteStringValue(value.ToString(serializationFormat));
-}
-
-internal class IsoDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
-{
-    public override bool CanConvert(Type t) => t == typeof(DateTimeOffset);
-
-    private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
-
-    private DateTimeStyles _dateTimeStyles = DateTimeStyles.RoundtripKind;
-    private string? _dateTimeFormat;
-    private CultureInfo? _culture;
-
-    public DateTimeStyles DateTimeStyles
-    {
-        get => _dateTimeStyles;
-        set => _dateTimeStyles = value;
-    }
-
-    public string? DateTimeFormat
-    {
-        get => _dateTimeFormat ?? string.Empty;
-        set => _dateTimeFormat = (string.IsNullOrEmpty(value)) ? null : value;
-    }
-
-    public CultureInfo Culture
-    {
-        get => _culture ?? CultureInfo.CurrentCulture;
-        set => _culture = value;
-    }
-
-    public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
-    {
-        string text;
 
 
-        if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-        {
-            value = value.ToUniversalTime();
-        }
-
-        text = value.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-
-        writer.WriteStringValue(text);
-    }
-
-    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? dateText = reader.GetString();
-
-        if (string.IsNullOrEmpty(dateText) == false)
-        {
-            if (!string.IsNullOrEmpty(_dateTimeFormat))
-            {
-                return DateTimeOffset.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
-            }
-            else
-            {
-                return DateTimeOffset.Parse(dateText, Culture, _dateTimeStyles);
-            }
-        }
-        else
-        {
-            return default(DateTimeOffset);
-        }
-    }
 
 
-    public static readonly IsoDateTimeOffsetConverter Singleton = new IsoDateTimeOffsetConverter();
-}
+
+
+
 
 #pragma warning restore CS8618
 #pragma warning restore CS8601

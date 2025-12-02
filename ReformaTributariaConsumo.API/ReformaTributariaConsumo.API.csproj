@@ -40,14 +40,11 @@
 
     <ItemGroup>
       <None Remove="Utils\ReturnApi\**" />
+      <None Include="Model\Lista\RtcClassificacaoTributariaLista.Model.cs" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="Model\RtcClassificacaoTributariaLista.Model.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="Model\RtcClassificacaoTributariaLista.Model.cs" />
     </ItemGroup>
 
 </Project>
