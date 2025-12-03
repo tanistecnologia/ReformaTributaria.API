@@ -102,12 +102,16 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = $"Reforma Tributária do Consumo API (V.{Assembly.GetEntryAssembly()?.GetName().Version?.ToString()})",
         Version = "v1",
-        Description = @"### Autenticação
-                    Todas as requisições devem incluir o header 'x-api-key'.
+        Description = $@"
+            SDK: {Environment.Version}
+            OS: {Environment.OSVersion}
+
+            ### Autenticação
+            Todas as requisições devem incluir o header 'x-api-key'.
                     
-                    ### Códigos de Erro
-                    - 401: API Key não fornecida ou inválida
-                    - 403: API Key sem permissão para o recurso"
+            ### Códigos de Erro
+              - 401: API Key não fornecida ou inválida
+              - 403: API Key sem permissão para o recurso"
     });
 
     // Configuração da API Key no Swagger
