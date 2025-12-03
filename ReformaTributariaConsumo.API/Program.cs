@@ -156,7 +156,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseSwagger(options => options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0);
+app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1);
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Reforma Tributária do Consumo - Tanis Hub");
