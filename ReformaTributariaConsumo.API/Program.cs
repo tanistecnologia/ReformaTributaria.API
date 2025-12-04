@@ -22,7 +22,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 
 using System.Data;
 using System.Reflection;
-
+using System.Runtime.InteropServices;
 using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -105,7 +105,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = $@"
             SDK: {Environment.Version}
             OS: {Environment.OSVersion}
-
+            Runtime Info: {RuntimeInformation.FrameworkDescription.ToString()}
             ### Autenticação
             Todas as requisições devem incluir o header 'x-api-key'.
                     
