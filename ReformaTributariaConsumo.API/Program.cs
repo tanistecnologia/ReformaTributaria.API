@@ -43,11 +43,19 @@ builder.Services.AddHangfireServer();
 builder.Services
     .AddHealthChecks()
     .Add(new HealthCheckRegistration(
-        "SQL Server",
-        sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("SQLServer")),
+        "SQL Server DB_MERCANTIS",
+        sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("SQLServerDB_MERCANTIS")),
         failureStatus: HealthStatus.Unhealthy,
         tags: null
     ))
+
+    .Add(new HealthCheckRegistration(
+        "SQL Server DB_TANISHUB",
+        sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("SQLServerDB_TANISHUB")),
+        failureStatus: HealthStatus.Unhealthy,
+        tags: null
+    ))
+    
     .Add(new HealthCheckRegistration(
         "PostgreSQL",
         sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("PostgreSQL")),
@@ -61,7 +69,10 @@ builder.Services.AddSession();
 
 builder.Services.AddScoped<ReformaTributariaService>();
 builder.Services.AddKeyedScoped<IDbConnection>(
-    "SQLServer",
+    "SQLServerDB_MERCANTIS",
+    (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
+builder.Services.AddKeyedScoped<IDbConnection>(
+    "SQLServerDB_TANISHUB",
     (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
 builder.Services.AddKeyedScoped<IDbConnection>(
     "PostgreSQL",
@@ -105,7 +116,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = $@"
             SDK: {Environment.Version}
             OS: {Environment.OSVersion}
-            Runtime Info: {RuntimeInformation.FrameworkDescription.ToString()}
+            Runtime Info: {RuntimeInformation.FrameworkDescription}
             ### Autenticação
             Todas as requisições devem incluir o header 'x-api-key'.
                     
