@@ -33,8 +33,8 @@ public class RtcSituacaoTributariaListaModel
     [JsonPropertyName("RST_IND_REDUTORBC")]
     public ESN RST_IND_REDUTORBC { get; set; }
 
-    [JsonPropertyName("RST_DT_ATUALIZACAO_TABELA")]
-    public DateTime RST_DT_ATUALIZACAO_TABELA { get; set; }
+    [JsonPropertyName("RST_DT_ATUALIZACAO")]
+    public DateTime RST_DT_ATUALIZACAO { get; set; }
 }
 
 public class RtcClassificacaoTributariaListaModel

@@ -41,10 +41,10 @@ public static partial class StringExtensions
 
     public static object? ToDateOnly(this string value)
     {
-        if (value != string.Empty)
-            return DateOnly.ParseExact(value, "yyyy-MM-dd");
-
-        return DBNull.Value;
+        if (value == string.Empty) return DBNull.Value;
+        
+        var dataRetorno = DateOnly.ParseExact(value, "yyyy-MM-dd");
+        return dataRetorno;
     }
 
     public static bool ValidaCNPJ(this string value)

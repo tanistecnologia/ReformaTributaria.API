@@ -11,32 +11,35 @@ using System.Data;
 
 namespace ReformaTributaria.API.Services;
 
-public class ReformaTributariaService(ILogger<ReformaTributariaService> logger, 
+public class ReformaTributariaService(
+    ILogger<ReformaTributariaService> logger, 
     [FromKeyedServices("SQLServerDB_MERCANTIS")] IDbConnection connDbMercantis,
     [FromKeyedServices("SQLServerDB_TANISHUB")] IDbConnection connDbTanisHub)
 {
-    public async Task<string> InsereDadosRtc(List<RtcClassificacaoTributariaPostModel> listClassificacaoTributaria)
+    public async Task<List<string>> InsereDadosCST_CCLASSTRIB(List<RtcClassificacaoTributariaPostModel> listClassificacaoTributaria)
     {
-        var rowsAffected = 0;
-        var rowsCstAffected = 0;
+        var retornos = new List<string>();
 
         List<IDbConnection> listConnections = [connDbMercantis, connDbTanisHub];
 
         foreach (var connection in listConnections)
         {
+            var schema = connection == connDbTanisHub ? "AUX" : "RTC";
+            logger.LogInformation("Processando Banco: {Database}", connection.Database);
+            
             using var transaction = connection.BeginTransaction();
             try
             {
                 var dataAtualizacaoTabela = DateTime.Now;
-                await transaction.ExecuteAsync("delete from RTC.TBL_RTC_CLASSIFICACAO_TRIBUTARIA");
-                await transaction.ExecuteAsync("delete from RTC.TBL_RTC_SITUACAO_TRIBUTARIA");
+                await transaction.ExecuteAsync($"delete from {schema}.TBL_RTC_CLASSIFICACAO_TRIBUTARIA");
+                await transaction.ExecuteAsync($"delete from {schema}.TBL_RTC_SITUACAO_TRIBUTARIA");
 
                 foreach (var ctrib in listClassificacaoTributaria)
                 {
                     var parameters = new DynamicParameters();
                     parameters.Add("RST_COD_CST", ctrib.Cst.CodigoSituacaoTributaria, dbType: DbType.String);
                     var qtdeCst = await transaction.QuerySingleOrDefaultAsync<int>(
-                        sql: "select count(*) from RTC.TBL_RTC_SITUACAO_TRIBUTARIA C where C.RST_COD_CST = @RST_COD_CST",
+                        sql: $"select count(*) from {schema}.TBL_RTC_SITUACAO_TRIBUTARIA C where C.RST_COD_CST = @RST_COD_CST",
                         param: parameters
                     );
 
@@ -52,15 +55,15 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
                         parameters.Add("RST_IND_GTRANSFCRED", ctrib.Cst.IndGTransfCred.ToSN(), dbType: DbType.String);
                         parameters.Add("RST_IND_GCREDPRESIBSZFM", ctrib.Cst.IndGCredPresIbsZfm.ToSN(), dbType: DbType.String);
                         parameters.Add("RST_IND_REDUTORBC", ctrib.Cst.IndRedutorBc.ToSN(), dbType: DbType.String);
-                        parameters.Add("RST_DT_ATUALIZACAO_TABELA", dataAtualizacaoTabela, dbType: DbType.Date);
+                        parameters.Add("RST_DT_ATUALIZACAO", dataAtualizacaoTabela, dbType: DbType.DateTime2);
 
-                        rowsCstAffected += await transaction.ExecuteAsync(
-                            sql: @"
-                                    insert into RTC.TBL_RTC_SITUACAO_TRIBUTARIA(
-                                        RST_COD_CST, RST_DS_SITUACAO_TRIBUTARIA, RST_IND_GIBSCBS, RST_IND_GIBSCBSMONO, RST_IND_GRED, RST_IND_GDIF,
-                                        RST_IND_GTRANSFCRED, RST_IND_GCREDPRESIBSZFM, RST_IND_REDUTORBC, RST_DT_ATUALIZACAO_TABELA)
-                                    values (@RST_COD_CST, @RST_DS_SITUACAO_TRIBUTARIA, @RST_IND_GIBSCBS, @RST_IND_GIBSCBSMONO, @RST_IND_GRED, @RST_IND_GDIF,
-                                            @RST_IND_GTRANSFCRED, @RST_IND_GCREDPRESIBSZFM, @RST_IND_REDUTORBC, @RST_DT_ATUALIZACAO_TABELA)",
+                        await transaction.ExecuteAsync(
+                            sql: $@"
+                                insert into {schema}.TBL_RTC_SITUACAO_TRIBUTARIA(
+                                    RST_COD_CST, RST_DS_SITUACAO_TRIBUTARIA, RST_IND_GIBSCBS, RST_IND_GIBSCBSMONO, RST_IND_GRED, RST_IND_GDIF,
+                                    RST_IND_GTRANSFCRED, RST_IND_GCREDPRESIBSZFM, RST_IND_REDUTORBC, RST_DT_ATUALIZACAO)
+                                values (@RST_COD_CST, @RST_DS_SITUACAO_TRIBUTARIA, @RST_IND_GIBSCBS, @RST_IND_GIBSCBSMONO, @RST_IND_GRED, @RST_IND_GDIF,
+                                        @RST_IND_GTRANSFCRED, @RST_IND_GCREDPRESIBSZFM, @RST_IND_REDUTORBC, @RST_DT_ATUALIZACAO)",
                             param: parameters
                         );
                     }
@@ -106,46 +109,48 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
 
                     parameters.Add("RCT_DT_INI_VIGENCIA", ctrib.DIniVig.ToDateOnly(), dbType: DbType.Date);
                     parameters.Add("RCT_DT_FIM_VIGENCIA", ctrib.DFimVig.ToDateOnly(), dbType: DbType.Date);
-                    parameters.Add("RCT_DT_ATUALIZACAO", ctrib.DataAtualizacao.ToDateOnly(), dbType: DbType.Date);
+                    parameters.Add("RCT_DT_ATUALIZACAO", dataAtualizacaoTabela, dbType: DbType.DateTime2);
 
-                    rowsAffected += await transaction.ExecuteAsync(
-                        sql: @"
-							    INSERT INTO RTC.TBL_RTC_CLASSIFICACAO_TRIBUTARIA
-								    (RCT_COD_CLASS_TRIB, RST_COD_CST, RTA_COD_ANEXO, RCT_DS_CLASS_TRIB, RCT_NOME_CLASS_TRIB, RCT_LC_REDACAO, RCT_LC_214_25,
-                                    RCT_TIPO_ALIQUOTA, RCT_PERC_RED_IBS, RCT_PERC_RED_CBS, RCT_IND_GTRIBREGULAR, RCT_IND_GCREDPRESOPER,
-                                    RCT_IND_GMONOPADRAO, RCT_IND_GMONORETEN, RCT_IND_GMONORET, RCT_IND_GMONODIF, RCT_IND_GESTORNOCRED, 
-                                    RCT_IND_NFEABI, RCT_IND_NFE, RCT_IND_NFCE, RCT_IND_CTE, RCT_IND_CTEOS, RCT_IND_BPE, RCT_IND_BPETA, 
-                                    RCT_IND_BPETM, RCT_IND_NF3E, RCT_IND_NFSE, RCT_IND_NFSEVIA, RCT_IND_NFCOM, RCT_IND_NFAG, RCT_IND_NFGAS,
-                                    RCT_IND_DERE, RCT_LINK_LEGISLACAO, RCT_DT_INI_VIGENCIA, RCT_DT_FIM_VIGENCIA, RCT_DT_ATUALIZACAO)
-							    VALUES
-								    (@RCT_COD_CLASS_TRIB, @RST_COD_CST, @RTA_COD_ANEXO, @RCT_DS_CLASS_TRIB, @RCT_NOME_CLASS_TRIB, @RCT_LC_REDACAO, @RCT_LC_214_25,
-                                    @RCT_TIPO_ALIQUOTA, @RCT_PERC_RED_IBS, @RCT_PERC_RED_CBS, @RCT_IND_GTRIBREGULAR, @RCT_IND_GCREDPRESOPER,
-                                    @RCT_IND_GMONOPADRAO, @RCT_IND_GMONORETEN, @RCT_IND_GMONORET, @RCT_IND_GMONODIF, @RCT_IND_GESTORNOCRED, 
-                                    @RCT_IND_NFEABI, @RCT_IND_NFE, @RCT_IND_NFCE, @RCT_IND_CTE, @RCT_IND_CTEOS, @RCT_IND_BPE, @RCT_IND_BPETA, 
-                                    @RCT_IND_BPETM, @RCT_IND_NF3E, @RCT_IND_NFSE, @RCT_IND_NFSEVIA, @RCT_IND_NFCOM, @RCT_IND_NFAG, @RCT_IND_NFGAS,
-                                    @RCT_IND_DERE, @RCT_LINK_LEGISLACAO, @RCT_DT_INI_VIGENCIA, @RCT_DT_FIM_VIGENCIA, @RCT_DT_ATUALIZACAO)",
+                    await transaction.ExecuteAsync(
+                        sql: $@"
+							INSERT INTO {schema}.TBL_RTC_CLASSIFICACAO_TRIBUTARIA
+								(RCT_COD_CLASS_TRIB, RST_COD_CST, RTA_COD_ANEXO, RCT_DS_CLASS_TRIB, RCT_NOME_CLASS_TRIB, RCT_LC_REDACAO, RCT_LC_214_25,
+                                RCT_TIPO_ALIQUOTA, RCT_PERC_RED_IBS, RCT_PERC_RED_CBS, RCT_IND_GTRIBREGULAR, RCT_IND_GCREDPRESOPER,
+                                RCT_IND_GMONOPADRAO, RCT_IND_GMONORETEN, RCT_IND_GMONORET, RCT_IND_GMONODIF, RCT_IND_GESTORNOCRED, 
+                                RCT_IND_NFEABI, RCT_IND_NFE, RCT_IND_NFCE, RCT_IND_CTE, RCT_IND_CTEOS, RCT_IND_BPE, RCT_IND_BPETA, 
+                                RCT_IND_BPETM, RCT_IND_NF3E, RCT_IND_NFSE, RCT_IND_NFSEVIA, RCT_IND_NFCOM, RCT_IND_NFAG, RCT_IND_NFGAS,
+                                RCT_IND_DERE, RCT_LINK_LEGISLACAO, RCT_DT_INI_VIGENCIA, RCT_DT_FIM_VIGENCIA, RCT_DT_ATUALIZACAO)
+							VALUES
+								(@RCT_COD_CLASS_TRIB, @RST_COD_CST, @RTA_COD_ANEXO, @RCT_DS_CLASS_TRIB, @RCT_NOME_CLASS_TRIB, @RCT_LC_REDACAO, @RCT_LC_214_25,
+                                @RCT_TIPO_ALIQUOTA, @RCT_PERC_RED_IBS, @RCT_PERC_RED_CBS, @RCT_IND_GTRIBREGULAR, @RCT_IND_GCREDPRESOPER,
+                                @RCT_IND_GMONOPADRAO, @RCT_IND_GMONORETEN, @RCT_IND_GMONORET, @RCT_IND_GMONODIF, @RCT_IND_GESTORNOCRED, 
+                                @RCT_IND_NFEABI, @RCT_IND_NFE, @RCT_IND_NFCE, @RCT_IND_CTE, @RCT_IND_CTEOS, @RCT_IND_BPE, @RCT_IND_BPETA, 
+                                @RCT_IND_BPETM, @RCT_IND_NF3E, @RCT_IND_NFSE, @RCT_IND_NFSEVIA, @RCT_IND_NFCOM, @RCT_IND_NFAG, @RCT_IND_NFGAS,
+                                @RCT_IND_DERE, @RCT_LINK_LEGISLACAO, @RCT_DT_INI_VIGENCIA, @RCT_DT_FIM_VIGENCIA, @RCT_DT_ATUALIZACAO)",
                         param: parameters
                     );
 
                     logger.LogInformation(
-                        "Registros inseridos: {CodigoClassificacaoTributaria} CST: {RowsCSTAffected} CCLASTRIB: {RowsAffected}",
-                        ctrib.CodigoClassificacaoTributaria.Trim(), rowsCstAffected, rowsAffected);
+                        "Inserido{Database}: {CodigoClassificacaoTributaria}", connection.Database, ctrib.CodigoClassificacaoTributaria);
                 }
                 transaction.Commit();
+                retornos.Add($"{connection.Database} => ok");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 transaction.Rollback();
-                return "Erro: " + e.Message;
+                retornos.Add($"{connection.Database} => Erro: {e.Message}");
             }            
         }
-        return "ok";
+        
+        return retornos;
     }
 
-    public async Task<List<RtcClassificacaoTributariaListaModel>> GetDados()
+    public async Task<List<RtcClassificacaoTributariaListaModel>> GetDadosCST_CCLASSTRIB()
     {
-        var dados = await connDbMercantis.QueryAsync<RtcClassificacaoTributariaListaModel, RtcSituacaoTributariaListaModel, RtcClassificacaoTributariaListaModel>(
+        var dados = await connDbMercantis
+            .QueryAsync<RtcClassificacaoTributariaListaModel, RtcSituacaoTributariaListaModel, RtcClassificacaoTributariaListaModel>(
             sql: @"
                 select
                   RCT.RCT_COD_CLASS_TRIB, RCT.RTA_COD_ANEXO, RCT.RCT_DS_CLASS_TRIB, RCT.RCT_NOME_CLASS_TRIB,
@@ -160,7 +165,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
 
                   RST.RST_COD_CST, RST.RST_DS_SITUACAO_TRIBUTARIA, RST.RST_IND_GIBSCBS, RST.RST_IND_GIBSCBSMONO,
                   RST.RST_IND_GRED, RST.RST_IND_GDIF, RST.RST_IND_GTRANSFCRED, RST.RST_IND_GCREDPRESIBSZFM,
-                  RST.RST_IND_REDUTORBC, RST.RST_DT_ATUALIZACAO_TABELA
+                  RST.RST_IND_REDUTORBC, RST.RST_DT_ATUALIZACAO
                 from
                   RTC.TBL_RTC_CLASSIFICACAO_TRIBUTARIA RCT
                   inner join RTC.TBL_RTC_SITUACAO_TRIBUTARIA RST on RST.RST_COD_CST = RCT.RST_COD_CST",
@@ -174,19 +179,20 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
         return [.. dados];
     }
 
-    public async Task<string> InsereDadosAnexos(List<AnexoModel> anexos)
+    public async Task<List<string>> InsereDadosAnexos(List<AnexoModel> anexos)
     {
-        var rowsAffected = 0;
-        
+        var retornos = new List<string>();
         List<IDbConnection> listConnections = [connDbMercantis, connDbTanisHub];
 
         foreach (var connection in listConnections)
         {
+            var schema = connection == connDbTanisHub ? "AUX" : "RTC";
+            
             using var transaction = connection.BeginTransaction();
             try
             {
                 var dataAtualizacaoTabela = DateTime.Now;
-                await transaction.ExecuteAsync("delete from RTC.TBL_RTC_ANEXOS");
+                await transaction.ExecuteAsync($"delete from {schema}.TBL_RTC_ANEXOS");
 
                 foreach (var anexo in anexos)
                 {
@@ -196,31 +202,31 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
                     parameters.Add("RTA_CODIGO", anexo.Codigo, dbType: DbType.String);
                     parameters.Add("RTA_DT_INICIO_VIGENCIA", anexo.IniVigencia.ToDateOnly(), dbType: DbType.Date);
                     parameters.Add("RTA_DT_FIM_VIGENCIA", anexo.FimVigencia.ToDateOnly(), dbType: DbType.Date);
-                    parameters.Add("RTA_DT_ATUALIZACAO_TABELA", dataAtualizacaoTabela, dbType: DbType.Date);
+                    parameters.Add("RTA_DT_ATUALIZACAO", dataAtualizacaoTabela, dbType: DbType.DateTime2);
 
-                    rowsAffected += await transaction.ExecuteAsync(
-                        sql: @"
-							INSERT INTO RTC.TBL_RTC_ANEXOS
-							  (RTA_COD_ANEXO, RTA_TIPO_DOC, RTA_CODIGO, RTA_DT_INICIO_VIGENCIA, RTA_DT_FIM_VIGENCIA, RTA_DT_ATUALIZACAO_TABELA)
+                    await transaction.ExecuteAsync(
+                        sql: $@"
+							INSERT INTO {schema}.TBL_RTC_ANEXOS
+							  (RTA_COD_ANEXO, RTA_TIPO_DOC, RTA_CODIGO, RTA_DT_INICIO_VIGENCIA, RTA_DT_FIM_VIGENCIA, RTA_DT_ATUALIZACAO)
 							VALUES
-							  (@RTA_COD_ANEXO, @RTA_TIPO_DOC, @RTA_CODIGO, @RTA_DT_INICIO_VIGENCIA, @RTA_DT_FIM_VIGENCIA, @RTA_DT_ATUALIZACAO_TABELA)",
+							  (@RTA_COD_ANEXO, @RTA_TIPO_DOC, @RTA_CODIGO, @RTA_DT_INICIO_VIGENCIA, @RTA_DT_FIM_VIGENCIA, @RTA_DT_ATUALIZACAO)",
                         param: parameters
                     );
 
                     logger.LogInformation(
-                        "Registro inserido: {Anexo} - {Tipo} - {Codigo}/{RowsAffected}",
-                        anexo.Anexo, anexo.Tipo, anexo.Codigo, rowsAffected);
+                        "Registro inserido ({Database}): {Anexo} - {Tipo} - {Codigo}", connection.Database, anexo.Anexo, anexo.Tipo, anexo.Codigo);
                 }
                 transaction.Commit();
+                retornos.Add($"{connection.Database} => ok");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 transaction.Rollback();
-                return "Erro: " + e.Message;
+                retornos.Add($"{connection.Database} => Erro: {e.Message}");
             }
         }
-        return "ok";
+        return retornos;
     }
 
     public async Task<List<AnexoListModel>> GetDadosAnexos()
@@ -229,7 +235,7 @@ public class ReformaTributariaService(ILogger<ReformaTributariaService> logger,
             sql: @"
                 select 
                   RTA_COD_ANEXO ANEXO, RTA_TIPO_DOC TIPO, RTA_CODIGO CODIGO, RTA_DT_INICIO_VIGENCIA INIVIGENCIA, 
-                  RTA_DT_FIM_VIGENCIA FIMVIGENCIA, RTA_DT_ATUALIZACAO_TABELA ATUALIZADO_EM 
+                  RTA_DT_FIM_VIGENCIA FIMVIGENCIA, RTA_DT_ATUALIZACAO ATUALIZADO_EM 
                 from
                   RTC.TBL_RTC_ANEXOS");
 

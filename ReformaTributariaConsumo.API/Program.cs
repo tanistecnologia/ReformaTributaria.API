@@ -73,7 +73,7 @@ builder.Services.AddKeyedScoped<IDbConnection>(
     (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
 builder.Services.AddKeyedScoped<IDbConnection>(
     "SQLServerDB_TANISHUB",
-    (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbMercantis))!);
+    (_, _) => ConnDB<SqlConnection>.Get(ConnStr.Get(ConnectStr.dbTanisHub))!);
 builder.Services.AddKeyedScoped<IDbConnection>(
     "PostgreSQL",
     (_, _) => ConnDB<NpgsqlConnection>.Get(ConnStr.Get(ConnectStr.dbHangfire))!);

@@ -21,16 +21,16 @@ public class ReformaTributariaConsumoController(
     ReformaTributariaService reformaTributariaService) : ControllerBase
 {
     [HttpPost]
-    [SwaggerOperation("Atualiza as tabelas de Classificações Tributárias", "")]
+    [SwaggerOperation("Alimenta a tabela de Classificação Tributária", "")]
     [Route("")]
     public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaPostModel> data)
     {
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
-        return Ok(await reformaTributariaService.InsereDadosRtc(data));
+        return Ok(await reformaTributariaService.InsereDadosCST_CCLASSTRIB(data));
     }
 
     [HttpGet]
-    [SwaggerOperation("Lista tabela de Classificações Tributárias", "")]
+    [SwaggerOperation("Lista tabela de Classificação Tributária", "")]
     [Route("")]
     public async Task<ResponseDTO<List<RtcClassificacaoTributariaListaModel>>> GetData()
     {
@@ -38,13 +38,13 @@ public class ReformaTributariaConsumoController(
         {
             Info = new BasicInfo<List<RtcClassificacaoTributariaListaModel>>
             {
-                Dados = await reformaTributariaService.GetDados()
+                Dados = await reformaTributariaService.GetDadosCST_CCLASSTRIB()
             }
         };
     }
 
     [HttpPost]
-    [SwaggerOperation("Lista de Anexos das Classificações Tributárias", "O campo tipo deve ser 1-NCM ou 2-NBS")]
+    [SwaggerOperation("Alimenta a tabela de Anexos das Classificação Tributária", "O campo tipo deve ser 1-NCM ou 2-NBS")]
     [Route("Anexos")]
     public async Task<OkObjectResult> PostDataAnexos([FromBody] List<AnexoModel> data)
     {
