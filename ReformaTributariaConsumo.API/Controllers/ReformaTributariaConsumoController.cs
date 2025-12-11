@@ -15,14 +15,14 @@ namespace ReformaTributaria.API.Controllers;
 [ApiKeyAuth]
 [SwaggerTag("Utilizada para gerenciar a Classificacao Tributaria.")]
 [Produces("application/json")]
-[Route("api/hubtributario/v10/[controller]/ClassificacaoTributaria")]
+[Route("api/hubtributario/v10/[controller]")]
 public class ReformaTributariaConsumoController(
     ILogger<ReformaTributariaConsumoController> logger,
     ReformaTributariaService reformaTributariaService) : ControllerBase
 {
     [HttpPost]
     [SwaggerOperation("Alimenta a tabela de Classificação Tributária", "")]
-    [Route("")]
+    [Route("ClassificacaoTributaria")]
     public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaPostModel> data)
     {
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
@@ -31,7 +31,7 @@ public class ReformaTributariaConsumoController(
 
     [HttpGet]
     [SwaggerOperation("Lista tabela de Classificação Tributária", "")]
-    [Route("")]
+    [Route("ClassificacaoTributaria")]
     public async Task<ResponseDTO<List<RtcClassificacaoTributariaListaModel>>> GetData()
     {
         return new ResponseDTO<List<RtcClassificacaoTributariaListaModel>>

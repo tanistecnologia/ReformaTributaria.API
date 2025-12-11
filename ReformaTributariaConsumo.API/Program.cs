@@ -48,14 +48,12 @@ builder.Services
         failureStatus: HealthStatus.Unhealthy,
         tags: null
     ))
-
     .Add(new HealthCheckRegistration(
         "SQL Server DB_TANISHUB",
         sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("SQLServerDB_TANISHUB")),
         failureStatus: HealthStatus.Unhealthy,
         tags: null
     ))
-    
     .Add(new HealthCheckRegistration(
         "PostgreSQL",
         sp => new DatabaseHealthCheck(sp.GetRequiredKeyedService<IDbConnection>("PostgreSQL")),
