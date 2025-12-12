@@ -15,7 +15,7 @@ namespace ReformaTributaria.API.Controllers;
 [ApiKeyAuth]
 [SwaggerTag("Utilizada para gerenciar a Classificacao Tributaria.")]
 [Produces("application/json")]
-[Route("api/hubtributario/v10/[controller]")]
+[Route("api/v10/[controller]")]
 public class ReformaTributariaConsumoController(
     ILogger<ReformaTributariaConsumoController> logger,
     ReformaTributariaService reformaTributariaService) : ControllerBase

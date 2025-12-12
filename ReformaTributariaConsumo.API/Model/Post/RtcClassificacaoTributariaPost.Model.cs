@@ -158,7 +158,7 @@ public partial class RtcCstModel
 
     [JsonPropertyName("ind_gAjusteCompet")]
     public ESimNao IndGAjusteCompet { get; set; }
-
+    
     [JsonPropertyName("ind_RedutorBC")]
     public ESimNao IndRedutorBc { get; set; }
 }

@@ -29,6 +29,9 @@ public class RtcSituacaoTributariaListaModel
 
     [JsonPropertyName("IND_GCREDPRESIBSZFM")]
     public ESN RST_IND_GCREDPRESIBSZFM { get; set; }
+    
+    [JsonPropertyName("IND_GAJUSTECOMPET")]
+    public ESN RST_IND_GAJUSTECOMPET { get; set; }  
 
     [JsonPropertyName("IND_REDUTORBC")]
     public ESN RST_IND_REDUTORBC { get; set; }

@@ -55,15 +55,18 @@ public class ReformaTributariaService(
                         parameters.Add("RST_IND_GTRANSFCRED", ctrib.Cst.IndGTransfCred.ToSN(), dbType: DbType.String);
                         parameters.Add("RST_IND_GCREDPRESIBSZFM", ctrib.Cst.IndGCredPresIbsZfm.ToSN(), dbType: DbType.String);
                         parameters.Add("RST_IND_REDUTORBC", ctrib.Cst.IndRedutorBc.ToSN(), dbType: DbType.String);
+                        parameters.Add("RST_IND_GAJUSTECOMPET", ctrib.Cst.IndGAjusteCompet.ToSN(), dbType: DbType.String);
                         parameters.Add("RST_DT_ATUALIZACAO", dataAtualizacaoTabela, dbType: DbType.DateTime2);
 
                         await transaction.ExecuteAsync(
                             sql: $@"
                                 insert into {schema}.TBL_RTC_SITUACAO_TRIBUTARIA(
-                                    RST_COD_CST, RST_DS_SITUACAO_TRIBUTARIA, RST_IND_GIBSCBS, RST_IND_GIBSCBSMONO, RST_IND_GRED, RST_IND_GDIF,
-                                    RST_IND_GTRANSFCRED, RST_IND_GCREDPRESIBSZFM, RST_IND_REDUTORBC, RST_DT_ATUALIZACAO)
-                                values (@RST_COD_CST, @RST_DS_SITUACAO_TRIBUTARIA, @RST_IND_GIBSCBS, @RST_IND_GIBSCBSMONO, @RST_IND_GRED, @RST_IND_GDIF,
-                                        @RST_IND_GTRANSFCRED, @RST_IND_GCREDPRESIBSZFM, @RST_IND_REDUTORBC, @RST_DT_ATUALIZACAO)",
+                                    RST_COD_CST, RST_DS_SITUACAO_TRIBUTARIA, RST_IND_GIBSCBS, RST_IND_GIBSCBSMONO, RST_IND_GRED, 
+                                    RST_IND_GDIF, RST_IND_GTRANSFCRED, RST_IND_GCREDPRESIBSZFM, RST_IND_GAJUSTECOMPET, 
+                                    RST_IND_REDUTORBC, RST_DT_ATUALIZACAO)
+                                values (@RST_COD_CST, @RST_DS_SITUACAO_TRIBUTARIA, @RST_IND_GIBSCBS, @RST_IND_GIBSCBSMONO, 
+                                        @RST_IND_GRED, @RST_IND_GDIF, @RST_IND_GTRANSFCRED, @RST_IND_GCREDPRESIBSZFM, 
+                                        @RST_IND_GAJUSTECOMPET, @RST_IND_REDUTORBC, @RST_DT_ATUALIZACAO)",
                             param: parameters
                         );
                     }
@@ -131,7 +134,7 @@ public class ReformaTributariaService(
                     );
 
                     logger.LogInformation(
-                        "Inserido{Database}: {CodigoClassificacaoTributaria}", connection.Database, ctrib.CodigoClassificacaoTributaria);
+                        "Inserido {Database}: {CodigoClassificacaoTributaria}", connection.Database, ctrib.CodigoClassificacaoTributaria);
                 }
                 transaction.Commit();
                 retornos.Add($"{connection.Database} => ok");
@@ -165,7 +168,7 @@ public class ReformaTributariaService(
 
                   RST.RST_COD_CST, RST.RST_DS_SITUACAO_TRIBUTARIA, RST.RST_IND_GIBSCBS, RST.RST_IND_GIBSCBSMONO,
                   RST.RST_IND_GRED, RST.RST_IND_GDIF, RST.RST_IND_GTRANSFCRED, RST.RST_IND_GCREDPRESIBSZFM,
-                  RST.RST_IND_REDUTORBC, RST.RST_DT_ATUALIZACAO
+                  RST_IND_GAJUSTECOMPET, RST.RST_IND_REDUTORBC, RST.RST_DT_ATUALIZACAO
                 from
                   RTC.TBL_RTC_CLASSIFICACAO_TRIBUTARIA RCT
                   inner join RTC.TBL_RTC_SITUACAO_TRIBUTARIA RST on RST.RST_COD_CST = RCT.RST_COD_CST",
