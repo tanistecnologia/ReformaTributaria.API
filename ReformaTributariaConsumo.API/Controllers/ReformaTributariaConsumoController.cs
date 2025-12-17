@@ -26,7 +26,7 @@ public class ReformaTributariaConsumoController(
     public async Task<IActionResult> PostData([FromBody] List<RtcClassificacaoTributariaPostModel> data)
     {
         logger.LogInformation("Dados recebidos: {DataCount}", data.Count);
-        return Ok(await reformaTributariaService.InsereDadosCST_CCLASSTRIB(data));
+        return Ok(await reformaTributariaService.InsereDadosCstCclasstrib(data));
     }
 
     [HttpGet]

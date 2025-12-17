@@ -78,49 +78,49 @@ public partial class RtcClassificacaoTributariaPostModel
     [JsonPropertyName("DataAtualizacao")]
     public string DataAtualizacao { get; set; }
 
-    [JsonPropertyName("ind_NFeABI")]
+    [JsonPropertyName("indNFeABI")]
     public ESimNao IndNFeAbi { get; set; }
 
-    [JsonPropertyName("ind_NFe")]
+    [JsonPropertyName("indNFe")]
     public ESimNao IndNFe { get; set; }
 
-    [JsonPropertyName("ind_NFCe")]
+    [JsonPropertyName("indNFCe")]
     public ESimNao IndNfCe { get; set; }
 
-    [JsonPropertyName("ind_CTe")]
+    [JsonPropertyName("indCTe")]
     public ESimNao IndCTe { get; set; }
 
-    [JsonPropertyName("ind_CTeOS")]
+    [JsonPropertyName("indCTeOS")]
     public ESimNao IndCTeOs { get; set; }
 
-    [JsonPropertyName("ind_BPe")]
+    [JsonPropertyName("indBPe")]
     public ESimNao IndBPe { get; set; }
 
-    [JsonPropertyName("ind_BPeTA")]
+    [JsonPropertyName("indBPeTA")]
     public ESimNao IndBPeTa { get; set; }
 
-    [JsonPropertyName("ind_BPeTM")]
+    [JsonPropertyName("indBPeTM")]
     public ESimNao IndBPeTm { get; set; }
 
-    [JsonPropertyName("ind_NF3e")]
+    [JsonPropertyName("indNF3e")]
     public ESimNao IndNf3E { get; set; }
 
-    [JsonPropertyName("ind_NFSe")]
+    [JsonPropertyName("indNFSe")]
     public ESimNao IndNfSe { get; set; }
 
-    [JsonPropertyName("ind_NFSeVia")]
+    [JsonPropertyName("indNFSeVia")]
     public ESimNao IndNfSeVia { get; set; }
 
-    [JsonPropertyName("ind_NFCom")]
+    [JsonPropertyName("indNFCom")]
     public ESimNao IndNfCom { get; set; }
 
-    [JsonPropertyName("ind_NFAg")]
+    [JsonPropertyName("indNFAg")]
     public ESimNao IndNfAg { get; set; }
 
-    [JsonPropertyName("ind_NFGas")]
+    [JsonPropertyName("indNFGas")]
     public ESimNao IndNfGas { get; set; }
 
-    [JsonPropertyName("ind_DERE")]
+    [JsonPropertyName("indDERE")]
     public ESimNao IndDere { get; set; }
 
     [JsonPropertyName("Anexo")]

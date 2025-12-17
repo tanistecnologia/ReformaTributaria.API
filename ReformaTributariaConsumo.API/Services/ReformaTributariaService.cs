@@ -16,7 +16,7 @@ public class ReformaTributariaService(
     [FromKeyedServices("SQLServerDB_MERCANTIS")] IDbConnection connDbMercantis,
     [FromKeyedServices("SQLServerDB_TANISHUB")] IDbConnection connDbTanisHub)
 {
-    public async Task<List<string>> InsereDadosCST_CCLASSTRIB(List<RtcClassificacaoTributariaPostModel> listClassificacaoTributaria)
+    public async Task<List<string>> InsereDadosCstCclasstrib(List<RtcClassificacaoTributariaPostModel> listClassificacaoTributaria)
     {
         var retornos = new List<string>();
 
@@ -116,20 +116,20 @@ public class ReformaTributariaService(
 
                     await transaction.ExecuteAsync(
                         sql: $@"
-							INSERT INTO {schema}.TBL_RTC_CLASSIFICACAO_TRIBUTARIA
-								(RCT_COD_CLASS_TRIB, RST_COD_CST, RTA_COD_ANEXO, RCT_DS_CLASS_TRIB, RCT_NOME_CLASS_TRIB, RCT_LC_REDACAO, RCT_LC_214_25,
-                                RCT_TIPO_ALIQUOTA, RCT_PERC_RED_IBS, RCT_PERC_RED_CBS, RCT_IND_GTRIBREGULAR, RCT_IND_GCREDPRESOPER,
-                                RCT_IND_GMONOPADRAO, RCT_IND_GMONORETEN, RCT_IND_GMONORET, RCT_IND_GMONODIF, RCT_IND_GESTORNOCRED, 
-                                RCT_IND_NFEABI, RCT_IND_NFE, RCT_IND_NFCE, RCT_IND_CTE, RCT_IND_CTEOS, RCT_IND_BPE, RCT_IND_BPETA, 
-                                RCT_IND_BPETM, RCT_IND_NF3E, RCT_IND_NFSE, RCT_IND_NFSEVIA, RCT_IND_NFCOM, RCT_IND_NFAG, RCT_IND_NFGAS,
-                                RCT_IND_DERE, RCT_LINK_LEGISLACAO, RCT_DT_INI_VIGENCIA, RCT_DT_FIM_VIGENCIA, RCT_DT_ATUALIZACAO)
-							VALUES
-								(@RCT_COD_CLASS_TRIB, @RST_COD_CST, @RTA_COD_ANEXO, @RCT_DS_CLASS_TRIB, @RCT_NOME_CLASS_TRIB, @RCT_LC_REDACAO, @RCT_LC_214_25,
-                                @RCT_TIPO_ALIQUOTA, @RCT_PERC_RED_IBS, @RCT_PERC_RED_CBS, @RCT_IND_GTRIBREGULAR, @RCT_IND_GCREDPRESOPER,
-                                @RCT_IND_GMONOPADRAO, @RCT_IND_GMONORETEN, @RCT_IND_GMONORET, @RCT_IND_GMONODIF, @RCT_IND_GESTORNOCRED, 
-                                @RCT_IND_NFEABI, @RCT_IND_NFE, @RCT_IND_NFCE, @RCT_IND_CTE, @RCT_IND_CTEOS, @RCT_IND_BPE, @RCT_IND_BPETA, 
-                                @RCT_IND_BPETM, @RCT_IND_NF3E, @RCT_IND_NFSE, @RCT_IND_NFSEVIA, @RCT_IND_NFCOM, @RCT_IND_NFAG, @RCT_IND_NFGAS,
-                                @RCT_IND_DERE, @RCT_LINK_LEGISLACAO, @RCT_DT_INI_VIGENCIA, @RCT_DT_FIM_VIGENCIA, @RCT_DT_ATUALIZACAO)",
+                            insert into {schema}.TBL_RTC_CLASSIFICACAO_TRIBUTARIA(
+                              RCT_COD_CLASS_TRIB, RST_COD_CST, RTA_COD_ANEXO, RCT_DS_CLASS_TRIB, RCT_NOME_CLASS_TRIB, RCT_LC_REDACAO,
+                              RCT_LC_214_25, RCT_TIPO_ALIQUOTA, RCT_PERC_RED_IBS, RCT_PERC_RED_CBS, RCT_IND_GTRIBREGULAR, RCT_IND_GCREDPRESOPER,
+                              RCT_IND_GMONOPADRAO, RCT_IND_GMONORETEN, RCT_IND_GMONORET, RCT_IND_GMONODIF, RCT_IND_GESTORNOCRED, RCT_IND_NFEABI,
+                              RCT_IND_NFE, RCT_IND_NFCE, RCT_IND_CTE, RCT_IND_CTEOS, RCT_IND_BPE, RCT_IND_BPETA, RCT_IND_BPETM, RCT_IND_NF3E,
+                              RCT_IND_NFSE, RCT_IND_NFSEVIA, RCT_IND_NFCOM, RCT_IND_NFAG, RCT_IND_NFGAS, RCT_IND_DERE, RCT_LINK_LEGISLACAO,
+                              RCT_DT_INI_VIGENCIA, RCT_DT_FIM_VIGENCIA, RCT_DT_ATUALIZACAO)
+                            values (@RCT_COD_CLASS_TRIB, @RST_COD_CST, @RTA_COD_ANEXO, @RCT_DS_CLASS_TRIB, @RCT_NOME_CLASS_TRIB,
+                              @RCT_LC_REDACAO, @RCT_LC_214_25, @RCT_TIPO_ALIQUOTA, @RCT_PERC_RED_IBS, @RCT_PERC_RED_CBS,
+                              @RCT_IND_GTRIBREGULAR, @RCT_IND_GCREDPRESOPER, @RCT_IND_GMONOPADRAO, @RCT_IND_GMONORETEN,
+                              @RCT_IND_GMONORET, @RCT_IND_GMONODIF, @RCT_IND_GESTORNOCRED, @RCT_IND_NFEABI, @RCT_IND_NFE, @RCT_IND_NFCE,
+                              @RCT_IND_CTE, @RCT_IND_CTEOS, @RCT_IND_BPE, @RCT_IND_BPETA, @RCT_IND_BPETM, @RCT_IND_NF3E, @RCT_IND_NFSE,
+                              @RCT_IND_NFSEVIA, @RCT_IND_NFCOM, @RCT_IND_NFAG, @RCT_IND_NFGAS, @RCT_IND_DERE, @RCT_LINK_LEGISLACAO,
+                              @RCT_DT_INI_VIGENCIA, @RCT_DT_FIM_VIGENCIA, @RCT_DT_ATUALIZACAO)",
                         param: parameters
                     );
 
