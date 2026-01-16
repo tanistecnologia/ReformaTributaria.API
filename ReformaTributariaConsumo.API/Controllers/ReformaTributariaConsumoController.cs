@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using ReformaTributaria.API.Model.Anexo;
 using ReformaTributaria.API.Model.Lista;
@@ -12,7 +13,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ReformaTributaria.API.Controllers;
 
 [ApiController]
-[ApiKeyAuth]
+//[ApiKeyAuth]
+[AllowAnonymous]
 [SwaggerTag("Utilizada para gerenciar a Classificacao Tributaria.")]
 [Produces("application/json")]
 [Route("api/v10/[controller]")]

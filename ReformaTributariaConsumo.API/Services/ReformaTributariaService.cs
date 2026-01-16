@@ -238,7 +238,7 @@ public class ReformaTributariaService(
             sql: @"
                 select 
                   RTA_COD_ANEXO ANEXO, RTA_TIPO_DOC TIPO, RTA_CODIGO CODIGO, RTA_DT_INICIO_VIGENCIA INIVIGENCIA, 
-                  RTA_DT_FIM_VIGENCIA FIMVIGENCIA, RTA_DT_ATUALIZACAO ATUALIZADO_EM 
+                  RTA_DT_FIM_VIGENCIA FIMVIGENCIA, RTA_DT_ATUALIZACAO ATUALIZADOEM 
                 from
                   RTC.TBL_RTC_ANEXOS");
 
