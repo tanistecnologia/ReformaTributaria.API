@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using System.Data;
+
+using Dapper;
 using Dapper.Transaction;
 
 using ReformaTributaria.API.Model.Anexo;
@@ -7,12 +9,10 @@ using ReformaTributaria.API.Model.Post;
 using ReformaTributaria.API.Utils;
 using ReformaTributaria.API.Utils.Extensions;
 
-using System.Data;
-
 namespace ReformaTributaria.API.Services;
 
 public class ReformaTributariaService(
-    ILogger<ReformaTributariaService> logger, 
+    ILogger<ReformaTributariaService> logger,
     [FromKeyedServices("SQLServerDB_MERCANTIS")] IDbConnection connDbMercantis,
     [FromKeyedServices("SQLServerDB_TANISHUB")] IDbConnection connDbTanisHub)
 {
@@ -26,7 +26,7 @@ public class ReformaTributariaService(
         {
             var schema = connection == connDbTanisHub ? "AUX" : "RTC";
             logger.LogInformation("Processando Banco: {Database}", connection.Database);
-            
+
             using var transaction = connection.BeginTransaction();
             try
             {
@@ -144,9 +144,9 @@ public class ReformaTributariaService(
                 Console.WriteLine(e.Message);
                 transaction.Rollback();
                 retornos.Add($"{connection.Database} => Erro: {e.Message}");
-            }            
+            }
         }
-        
+
         return retornos;
     }
 
@@ -190,7 +190,7 @@ public class ReformaTributariaService(
         foreach (var connection in listConnections)
         {
             var schema = connection == connDbTanisHub ? "AUX" : "RTC";
-            
+
             using var transaction = connection.BeginTransaction();
             try
             {

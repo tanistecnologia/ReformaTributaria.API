@@ -1,3 +1,7 @@
+using System.Data;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
 using AspNetCore.Scalar;
 
 using Hangfire;
@@ -20,9 +24,6 @@ using ReformaTributaria.API.Utils.Json;
 
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-using System.Data;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Tanis.Utils.Lib.DB.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,24 +77,10 @@ builder.Services.AddKeyedScoped<IDbConnection>(
     "PostgreSQL",
     (_, _) => ConnDB<NpgsqlConnection>.Get(ConnStr.Get(ConnectStr.dbHangfire))!);
 
-// builder.Services.AddMvc(config =>
-// {
-//     var policy = new AuthorizationPolicyBuilder()
-//         .RequireAuthenticatedUser()
-//         .Build();
-//     config.Filters.Add(new AuthorizeFilter(policy));
-// });
-//
-// builder.Services.AddAuthorizationBuilder()
-//     .AddPolicy("user", policy => policy.RequireClaim("Store", "user"))
-//     .AddPolicy("admin", policy => policy.RequireClaim("Store", "admin"));
-
 builder.Services.AddMvc();
-
 builder.Services
     .AddControllers()
     .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = new LowerCaseNamingPolicy(); });
-
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(configurePolicy =>
         configurePolicy
@@ -102,7 +89,6 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
     ));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -132,24 +118,6 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Scheme = "ApiKeyScheme"
     });
-
-    // Requisito de segurança global
-    //var scheme = new OpenApiSecurityScheme
-    //{
-
-    //    Reference = new OpenApiReference
-    //    {
-    //        Type = ReferenceType.SecurityScheme,
-    //        Id = "ApiKey"
-    //    },
-    //    In = ParameterLocation.Header
-    //};
-
-    //var requirement = new OpenApiSecurityRequirement
-    //{
-    //    { scheme, new List<string>() }
-    //};
-
     c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
     {
         [new OpenApiSecuritySchemeReference("ApiKey", doc)] = []

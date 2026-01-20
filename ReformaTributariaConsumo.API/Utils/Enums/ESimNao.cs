@@ -1,6 +1,6 @@
-﻿using ReformaTributaria.API.Utils.Json.JsonConverter;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+using ReformaTributaria.API.Utils.Json.JsonConverter;
 
 namespace ReformaTributaria.API.Utils.Enums;
 

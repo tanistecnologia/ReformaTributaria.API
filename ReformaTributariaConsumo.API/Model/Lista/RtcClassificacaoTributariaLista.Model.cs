@@ -1,6 +1,6 @@
-﻿using ReformaTributaria.API.Utils.Enums;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+using ReformaTributaria.API.Utils.Enums;
 
 namespace ReformaTributaria.API.Model.Lista;
 
@@ -29,9 +29,9 @@ public class RtcSituacaoTributariaListaModel
 
     [JsonPropertyName("IND_GCREDPRESIBSZFM")]
     public ESN RST_IND_GCREDPRESIBSZFM { get; set; }
-    
+
     [JsonPropertyName("IND_GAJUSTECOMPET")]
-    public ESN RST_IND_GAJUSTECOMPET { get; set; }  
+    public ESN RST_IND_GAJUSTECOMPET { get; set; }
 
     [JsonPropertyName("IND_REDUTORBC")]
     public ESN RST_IND_REDUTORBC { get; set; }

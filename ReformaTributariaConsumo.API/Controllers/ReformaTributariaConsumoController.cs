@@ -5,7 +5,6 @@ using ReformaTributaria.API.Model.Anexo;
 using ReformaTributaria.API.Model.Lista;
 using ReformaTributaria.API.Model.Post;
 using ReformaTributaria.API.Services;
-using ReformaTributaria.API.Services.Middlewares;
 using ReformaTributaria.API.Utils.DTO;
 
 using Swashbuckle.AspNetCore.Annotations;

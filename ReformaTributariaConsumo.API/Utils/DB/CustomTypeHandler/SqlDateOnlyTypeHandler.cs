@@ -1,6 +1,6 @@
-﻿using Dapper;
+﻿using System.Data;
 
-using System.Data;
+using Dapper;
 
 namespace ReformaTributaria.API.Utils.DB.CustomTypeHandler;
 

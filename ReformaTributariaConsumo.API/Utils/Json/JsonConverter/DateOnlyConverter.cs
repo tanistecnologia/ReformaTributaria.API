@@ -1,8 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
+using Microsoft.IdentityModel.Tokens;
 
 namespace ReformaTributaria.API.Utils.Json.JsonConverter;
 
